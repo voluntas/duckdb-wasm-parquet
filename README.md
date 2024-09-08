@@ -23,6 +23,10 @@ pnpm run dev
 
 ブラウザで `http://localhost:5173/` にアクセスして、`getParquet` ボタンをクリックしてください。
 
+## 動作例
+
+[![Image from Gyazo](https://i.gyazo.com/1e7db788572184e8b1a939eb237807ea.gif)](https://gyazo.com/1e7db788572184e8b1a939eb237807ea)
+
 ## Parquet ファイルについて
 
 以下の URL でお試し用の Parquet ファイルを取得することができます。
