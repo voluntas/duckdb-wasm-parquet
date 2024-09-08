@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
       FROM rtc_stats
-      USING SAMPLE 10 PERCENT (bernoulli);
+      USING SAMPLE 1 PERCENT (bernoulli);
     `)
 
     const resultElement = document.getElementById('result')
