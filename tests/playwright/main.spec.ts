@@ -16,7 +16,7 @@ test('scan parquet', async ({ page }) => {
   await expect(page.locator('#scanned')).toHaveText('Scanned: true', { timeout: 30000 })
 
   // 「load table」ボタンをクリック
-  await page.click('#load-table')
+  await page.click('#samples')
 
   // テーブルが表示されたことを確認
   await expect(page.locator('#result').locator('table')).toBeVisible()

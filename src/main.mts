@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await conn.close()
   })
 
-  document.getElementById('load-table')?.addEventListener('click', async () => {
+  document.getElementById('samples')?.addEventListener('click', async () => {
     const conn = await db.connect()
     // 10% のサンプルを取得
     const result = await conn.query(`
