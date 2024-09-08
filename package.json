@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "test:vitest": "vitest run",
-    "test:playwright": "playwright tests",
+    "test:playwright": "playwright test",
     "build": "vite build",
     "lint": "biome lint src/",
     "fmt": "pnpm biome format --write src/ tests/",
