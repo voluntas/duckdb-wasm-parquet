@@ -3,12 +3,52 @@
 <head>
   <meta charset="utf-8">
   <title>DuckDB-Wasm + Parquet + S3-compatible object storage</title>
+  <style>
+    #result {
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+    }
+
+    #result table {
+      border-collapse: collapse;
+      border: 2px solid #ddd;
+      table-layout: auto;
+      width: auto;
+    }
+
+    #result th,
+    #result td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    #result th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      border-bottom: 2px solid #ddd;
+    }
+
+    #result tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    #result tr:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
     <h1>DuckDB-Wasm + Parquet + S3-compatible object storage</h1>
-    <button id="get-parquet">getParquet</button>
+    <h2 id="scanned">Scanned: false</h2>
+    <h2 id="counted">Counted: 0</h2>
+    <button id="scan-parquet">Scan Parquet</button>
+    <button id="load-table">Load Table (LIMIT 100)</button>
+    <button id="aggregation-example">Aggregation</button>
+    <div id="result"></div>
   </div>
 
   <script type="module" src="./src/main.mts"></script>

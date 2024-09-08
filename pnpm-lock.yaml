@@ -11,6 +11,9 @@ importers:
       '@duckdb/duckdb-wasm':
         specifier: next
         version: 1.28.1-dev275.0
+      apache-arrow:
+        specifier: 17.0.0
+        version: 17.0.0
     devDependencies:
       '@biomejs/biome':
         specifier: 1.8.3

@@ -22,6 +22,7 @@
     "node": ">=22.8.0"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "next"
+    "@duckdb/duckdb-wasm": "next",
+    "apache-arrow": "17.0.0"
   }
 }
