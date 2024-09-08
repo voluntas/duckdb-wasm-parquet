@@ -19,5 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: pnpm --version
       - run: pnpm install
-      - run: pnpm test
+      - run: pnpm run build
+      - run: pnpm exec playwright install
+      - run: pnpm exec playwright test
