@@ -21,7 +21,9 @@ mv .env.template .env
 pnpm run dev
 ```
 
-ブラウザで `http://localhost:5173/` にアクセスして、`getParquet` ボタンをクリックしてください。
+- ブラウザで `http://localhost:5173/` にアクセスして、`Scan Parquet` ボタンをクリックしてください
+- `Load Table (LIMIT 100)` ボタンをクリックして、データを表示してみてください
+- `Aggregation` ボタンをクリックして、集計した結果を表示してみてください
 
 ## 動作例
 
