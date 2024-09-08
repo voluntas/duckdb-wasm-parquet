@@ -27,7 +27,7 @@ pnpm run dev
 
 ## 動作例
 
-[![Image from Gyazo](https://i.gyazo.com/1e7db788572184e8b1a939eb237807ea.gif)](https://gyazo.com/1e7db788572184e8b1a939eb237807ea)
+[![Image from Gyazo](https://i.gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d.gif)](https://gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d)
 
 ## Parquet ファイルについて
 
