@@ -29,13 +29,13 @@ pnpm run dev
 
 ## Parquet ファイルについて
 
-以下の URL でお試し用の Parquet ファイルを取得することができます。
+以下の URL でお試し用の [Parquet](https://parquet.apache.org/) ファイルを取得することができます。
 <https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet>
 
 この Parquet ファイルは[時雨堂](https://shiguredo.jp/)の [WebRTC SFU Sora](https://sora.shiguredo.jp/) が出力する
 クライアントの [WebRTC 統計情報](https://www.w3.org/TR/webrtc-stats/) を
 [Fluent Bit](https://fluentbit.io/) 経由で [S3 互換オブジェクトストレージ](https://www.linode.com/products/object-storage/) へ保存し、
-ログを DuckDB で集約しテーブルを作成後、 Parquet ファイルとして出力したものです。元々のログは JSONL 形式で gzip 圧縮です。
+ログを DuckDB で集約しテーブルを作成後、 Parquet ファイルとして出力したものです。元々のログは [JSONL](https://jsonlines.org/) 形式で gzip 圧縮です。
 
 - この Parquet ファイルは [zstd](https://github.com/facebook/zstd) で圧縮されています
 - この Parquet ファイルは [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) に保存されており、パブリックで誰でもアクセスすることができます
