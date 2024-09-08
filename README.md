@@ -1,4 +1,4 @@
-# Node.js Template
+# DuckDB-Wasm + Parquet + S3-compatible object storage
 
 ![Static Badge](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -9,6 +9,7 @@
 - Vitest
 - TypeScript
 - Biome
+- DuckDB-Wasm
 
 ## License
 

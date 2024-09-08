@@ -20,5 +20,8 @@
   "packageManager": "pnpm@9.9.0",
   "engines": {
     "node": ">=22.8.0"
+  },
+  "dependencies": {
+    "@duckdb/duckdb-wasm": "next"
   }
 }
