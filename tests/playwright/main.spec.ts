@@ -12,8 +12,6 @@ test('scan parquet', async ({ page }) => {
   // 「Scan Parquet」ボタンをクリック
   await page.click('#scan-parquet')
 
-  await page.waitForTimeout(5000)
-
   // true になるまで待機（最大10秒）
   await expect(page.locator('#scanned')).toHaveText('Scanned: true', { timeout: 30000 })
 
