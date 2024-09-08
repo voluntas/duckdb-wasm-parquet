@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.log/
+dist/
+
+# .env
+.env*
+!.env.template
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
