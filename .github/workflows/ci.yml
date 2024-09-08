@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,9 +21,11 @@ jobs:
           node-version: 22
       - run: pnpm --version
       - run: pnpm install
+      - run: pnpm fmt
+      - run: pnpm lint
       - run: pnpm run build
   test-playwright:
-    needs: build
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
