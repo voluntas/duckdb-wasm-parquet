@@ -37,7 +37,7 @@ pnpm run dev
 [Fluent Bit](https://fluentbit.io/) 経由で [S3 互換オブジェクトストレージ](https://www.linode.com/products/object-storage/) へ保存し、
 ログを DuckDB で集約しテーブルを作成後、 Parquet ファイルとして出力したものです。元々のログは JSONL 形式で gzip 圧縮です。
 
-- この Parquet ファイルは ZStandard で圧縮されています
+- この Parquet ファイルは [zstd](https://github.com/facebook/zstd) で圧縮されています
 - この Parquet ファイルは [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) に保存されており、パブリックで誰でもアクセスすることができます
 - この Parquet ファイルの [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) は `http://localhost:5173/` からのアクセスのみを許可しています
 - この Parquet ファイルのライセンスは [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) です
