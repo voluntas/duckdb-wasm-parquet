@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,3 +22,16 @@ jobs:
       - run: pnpm --version
       - run: pnpm install
       - run: pnpm run build
+  test-playwright:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: pnpm --version
+      - run: pnpm install
+      - run: pnpm exec playwright install chromium --with-deps
+      - run: pnpm test:playwright

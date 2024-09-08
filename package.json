@@ -5,11 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "e2e-test": "playwright test",
+    "test:vitest": "vitest run",
+    "test:playwright": "playwright tests",
     "build": "vite build",
     "lint": "biome lint src/",
-    "fmt": "pnpm biome format --write src/ test/",
-    "test": "vitest run",
+    "fmt": "pnpm biome format --write src/ tests/",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
