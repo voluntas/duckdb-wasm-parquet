@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await conn.close()
   })
 
-  document.getElementById('aggregation-example')?.addEventListener('click', async () => {
+  document.getElementById('aggregation')?.addEventListener('click', async () => {
     const conn = await db.connect()
     // SQL は適当ですので、参考にしないで下さい
     const result = await conn.query(`
@@ -139,6 +139,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       resultElement.innerHTML = ''
       resultElement.appendChild(table)
+    }
+  })
+
+  document.getElementById('clear')?.addEventListener('click', () => {
+    const resultElement = document.getElementById('result')
+    if (resultElement) {
+      resultElement.innerHTML = ''
     }
   })
 })
