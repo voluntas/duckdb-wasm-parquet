@@ -6,7 +6,7 @@ test('scan parquet', async ({ page }) => {
   // ページが完全に読み込まれるのを待つ
   await page.waitForLoadState('networkidle')
 
-  // 初期値が0であることを確認
+  // 初期値が 0 であることを確認
   await expect(page.locator('#scanned')).toHaveText('Scanned: false')
 
   // 「Scan Parquet」ボタンをクリック
@@ -18,17 +18,19 @@ test('scan parquet', async ({ page }) => {
   // 「load table」ボタンをクリック
   await page.click('#load-table')
 
-  // #result に table エレメントが div に追加されるか
+  // テーブルが表示されたことを確認
   await expect(page.locator('#result').locator('table')).toBeVisible()
 
-  // 一回テーブル削除する
+  // 「Clear」ボタンをクリック
   await page.click('#clear')
 
-  // #result から テーブルが削除されたことを確認する
+  // テーブルがクリアされたことを確認
   await expect(page.locator('#result').locator('table')).not.toBeVisible()
 
+  // 「Aggregation」ボタンをクリック
   await page.click('#aggregation')
 
+  // テーブルが表示されたことを確認
   await expect(page.locator('#result').locator('table')).toBeVisible()
 
   await page.close()

@@ -50,9 +50,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('load-table')?.addEventListener('click', async () => {
     const conn = await db.connect()
+    // 10% のサンプルを取得
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
-      FROM rtc_stats LIMIT 100;
+      FROM rtc_stats
+      USING SAMPLE 10 PERCENT (bernoulli);
     `)
 
     const resultElement = document.getElementById('result')

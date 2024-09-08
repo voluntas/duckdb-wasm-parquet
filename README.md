@@ -22,7 +22,7 @@ pnpm run dev
 ```
 
 - ブラウザで `http://localhost:5173/` にアクセスして、`Scan Parquet` ボタンをクリックしてください
-- `Load Table (LIMIT 100)` ボタンをクリックして、データを表示してみてください
+- `Load Table (LIMIT 100)` ボタンをクリックして、サンプリングした 10% のデータを表示してみてください
 - `Aggregation` ボタンをクリックして、集計した結果を表示してみてください
 
 ## 動作例
@@ -48,7 +48,7 @@ DuckDB で集約し Parquet ファイルとして出力したものです。
 ### DuckDB でアクセスしてみる
 
 ```sql
-D select * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet');
+D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet');
 ┌──────────────────────┬──────────────────────┬─────────────────┬───┬───────────────────┬─────────────────────┐
 │    connection_id     │          id          │      label      │ … │   rtc_timestamp   │      rtc_type       │
 │       varchar        │       varchar        │     varchar     │   │      double       │       varchar       │
