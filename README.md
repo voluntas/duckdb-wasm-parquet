@@ -12,7 +12,11 @@ Parquet ファイルを読み込んで SQL でクエリを実行するお試し�
 
 - SQL は適当ですので、参考にしないで下さい
 
-## 動作方法
+## とりあえず触ってみたい
+
+[GitHub Pages](https://voluntas.github.io/duckdb-wasm-parquet/)
+
+## ローカルで動作させる方法
 
 ```sh
 pnpm install
