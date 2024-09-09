@@ -1,5 +1,7 @@
 # CHANGES
 
+- [ADD] GitHub Pages にデプロイする
+  -https://voluntas.github.io/duckdb-wasm-parquet/ 
 - [ADD] Parquet ファイルを S3-compatible object storage から読み込む仕組みを追加
 - [ADD] 読み込んだ Parquet ファイルをテーブルにする仕組みを追加
 - [ADD] 読み込んだ Parquet ファイルの 10% を表示する仕組みを追加
