@@ -17,12 +17,26 @@ const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
+  const scanParquetButton = document.getElementById('scan-parquet') as HTMLButtonElement | null
+  const samplesButton = document.getElementById('samples') as HTMLButtonElement | null
+  const aggregationButton = document.getElementById('aggregation') as HTMLButtonElement | null
+  const clearButton = document.getElementById('clear') as HTMLButtonElement | null
+
+  // すべてのボタンを初期状態で無効化
+  for (const button of [scanParquetButton, samplesButton, aggregationButton, clearButton]) {
+    if (button) button.disabled = true
+  }
 
   const bundle = await duckdb.selectBundle(MANUAL_BUNDLES)
   const worker = new Worker(bundle.mainWorker ?? '')
   const logger = new duckdb.ConsoleLogger()
   const db = new duckdb.AsyncDuckDB(logger, worker)
   await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
+
+  // DuckDBの初期化が完了したらボタンを有効化
+  if (scanParquetButton) {
+    scanParquetButton.disabled = false
+  }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
     const conn = await db.connect()
@@ -43,6 +57,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const resultElement = document.getElementById('counted')
     if (resultElement) {
       resultElement.textContent = `Count: ${result.toArray()[0].count}`
+    }
+
+    // scan-parquetボタンを無効化し、他のボタンを有効化
+    if (scanParquetButton) {
+      scanParquetButton.disabled = true
+    }
+    if (samplesButton) {
+      samplesButton.disabled = false
+    }
+    if (aggregationButton) {
+      aggregationButton.disabled = false
+    }
+    if (clearButton) {
+      clearButton.disabled = false
     }
 
     await conn.close()
