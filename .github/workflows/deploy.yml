@@ -2,7 +2,7 @@ name: Deploy sora-devtools to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "github-pages"]
 
 permissions:
   contents: read
