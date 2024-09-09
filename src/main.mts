@@ -48,11 +48,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await conn.close()
   })
 
-  document.getElementById('load-table')?.addEventListener('click', async () => {
+  document.getElementById('samples')?.addEventListener('click', async () => {
     const conn = await db.connect()
+    // 10% のサンプルを取得
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
-      FROM rtc_stats LIMIT 100;
+      FROM rtc_stats
+      USING SAMPLE 1 PERCENT (bernoulli);
     `)
 
     const resultElement = document.getElementById('result')
@@ -80,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await conn.close()
   })
 
-  document.getElementById('aggregation-example')?.addEventListener('click', async () => {
+  document.getElementById('aggregation')?.addEventListener('click', async () => {
     const conn = await db.connect()
     // SQL は適当ですので、参考にしないで下さい
     const result = await conn.query(`
@@ -139,6 +141,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       resultElement.innerHTML = ''
       resultElement.appendChild(table)
+    }
+  })
+
+  document.getElementById('clear')?.addEventListener('click', () => {
+    const resultElement = document.getElementById('result')
+    if (resultElement) {
+      resultElement.innerHTML = ''
     }
   })
 })

@@ -22,12 +22,12 @@ pnpm run dev
 ```
 
 - ブラウザで `http://localhost:5173/` にアクセスして、`Scan Parquet` ボタンをクリックしてください
-- `Load Table (LIMIT 100)` ボタンをクリックして、データを表示してみてください
+- `Samples (1%)` ボタンをクリックして、サンプリングした 1% のデータを表示してみてください
 - `Aggregation` ボタンをクリックして、集計した結果を表示してみてください
 
 ## 動作例
 
-[![Image from Gyazo](https://i.gyazo.com/1e7db788572184e8b1a939eb237807ea.gif)](https://gyazo.com/1e7db788572184e8b1a939eb237807ea)
+[![Image from Gyazo](https://i.gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d.gif)](https://gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d)
 
 ## Parquet ファイルについて
 
@@ -35,9 +35,10 @@ pnpm run dev
 <https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet>
 
 この Parquet ファイルは[時雨堂](https://shiguredo.jp/)の [WebRTC SFU Sora](https://sora.shiguredo.jp/) が出力する
-クライアントの [WebRTC 統計情報](https://www.w3.org/TR/webrtc-stats/) を
+クライアントから送られてくる [WebRTC 統計情報](https://www.w3.org/TR/webrtc-stats/) を
 [Fluent Bit](https://fluentbit.io/) 経由で [S3 互換オブジェクトストレージ](https://www.linode.com/products/object-storage/) へ保存し、
-ログを DuckDB で集約しテーブルを作成後、 Parquet ファイルとして出力したものです。元々のログは [JSONL](https://jsonlines.org/) 形式で gzip 圧縮です。
+DuckDB で集約し Parquet ファイルとして出力したものです。
+元々のログは [JSONL](https://jsonlines.org/) 形式で gzip 圧縮です。
 
 - この Parquet ファイルは [zstd](https://github.com/facebook/zstd) で圧縮されています
 - この Parquet ファイルは [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) に保存されており、パブリックで誰でもアクセスすることができます
@@ -47,7 +48,7 @@ pnpm run dev
 ### DuckDB でアクセスしてみる
 
 ```sql
-D select * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet');
+D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet');
 ┌──────────────────────┬──────────────────────┬─────────────────┬───┬───────────────────┬─────────────────────┐
 │    connection_id     │          id          │      label      │ … │   rtc_timestamp   │      rtc_type       │
 │       varchar        │       varchar        │     varchar     │   │      double       │       varchar       │
