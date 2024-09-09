@@ -13,6 +13,9 @@ concurrency:
   group: "pages"
   cancel-in-progress: false
 
+env:
+  VITE_PARQUET_FILE_URL: ${{ secrets.VITE_PARQUET_FILE_URL }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
