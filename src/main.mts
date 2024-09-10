@@ -33,6 +33,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const db = new duckdb.AsyncDuckDB(logger, worker)
   await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
 
+  const conn = await db.connect()
+  await conn.query(`
+    INSTALL parquet;
+    LOAD parquet;
+    INSTALL json;
+    LOAD json;
+  `)
+  await conn.close()
+
   // DuckDBの初期化が完了したらボタンを有効化
   if (scanParquetButton) {
     scanParquetButton.disabled = false
@@ -41,6 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
     const conn = await db.connect()
     await conn.query(`
+      INSTALL parquet;
+      LOAD parquet;
       CREATE TABLE rtc_stats AS SELECT *
       FROM read_parquet('${PARQUET_FILE_URL}');
     `)
