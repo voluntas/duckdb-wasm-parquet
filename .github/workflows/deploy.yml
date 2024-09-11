@@ -15,7 +15,8 @@ concurrency:
 
 env:
   VITE_PARQUET_FILE_URL: ${{ secrets.VITE_PARQUET_FILE_URL }}
-
+  NODE_ENV: production
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
