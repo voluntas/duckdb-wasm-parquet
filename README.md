@@ -6,7 +6,7 @@
 ## 概要
 
 [DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) をブラウザで使用して、
-Parquet ファイルを読み込んで SQL でクエリを実行するお試し用のアプリです。
+S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで [OPSF](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に保存し、DuckDB 上で SQL でクエリを実行するお試し用のアプリです。
 
 ## 注意
 
@@ -31,7 +31,7 @@ pnpm run dev
 
 ## 動作例
 
-[![Image from Gyazo](https://i.gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d.gif)](https://gyazo.com/5dadf7e6bc002cb77d7d194e46fa5e3d)
+[![Image from Gyazo](https://i.gyazo.com/bc66f905f56dbf121e6ae31c8ab2c531.gif)](https://gyazo.com/bc66f905f56dbf121e6ae31c8ab2c531)
 
 ## Parquet ファイルについて
 
@@ -48,6 +48,15 @@ DuckDB で集約し Parquet ファイルとして出力したものです。
 - この Parquet ファイルは [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) に保存されており、パブリックで誰でもアクセスすることができます
 - この Parquet ファイルの [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) は `http://localhost:5173/` からのアクセスのみを許可しています
 - この Parquet ファイルのライセンスは [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) です
+
+## OPFS について
+
+[Origin private file system \- Web APIs \| MDN](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system)
+
+安全にブラウザでファイルを取り扱う仕組みです。 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) を利用して S3 互換のオブジェクトストレージから Parquet ファイルを取得し、OPFS に保存しています。
+保存したファイルを DuckDB へ登録し、アクセスできるようにします。
+
+この仕組みを使う事で解析用のファイルを再度ダウンロードする必要がなくなります。
 
 ### DuckDB でアクセスしてみる
 
