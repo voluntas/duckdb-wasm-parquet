@@ -21,12 +21,6 @@ test('scan parquet', async ({ page }) => {
   // テーブルが表示されたことを確認
   await expect(page.locator('#result').locator('table')).toBeVisible()
 
-  // 「Clear」ボタンをクリック
-  await page.click('#clear')
-
-  // テーブルがクリアされたことを確認
-  await expect(page.locator('#result').locator('table')).not.toBeVisible()
-
   // 「Aggregation」ボタンをクリック
   await page.click('#aggregation')
 

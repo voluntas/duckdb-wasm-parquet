@@ -1,19 +1,6 @@
 import * as duckdb from '@duckdb/duckdb-wasm'
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url'
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url'
-
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-  mvp: {
-    mainModule: duckdb_wasm,
-    mainWorker: mvp_worker,
-  },
-  eh: {
-    mainModule: duckdb_wasm_eh,
-    mainWorker: eh_worker,
-  },
-}
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
+import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
@@ -27,11 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (button) button.disabled = true
   }
 
-  const bundle = await duckdb.selectBundle(MANUAL_BUNDLES)
-  const worker = new Worker(bundle.mainWorker ?? '')
+  const worker = new duckdb_worker()
   const logger = new duckdb.ConsoleLogger()
   const db = new duckdb.AsyncDuckDB(logger, worker)
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
+  await db.instantiate(duckdb_wasm)
 
   const conn = await db.connect()
   await conn.query(`
@@ -48,12 +34,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
+    let buffer = await getBufferFromIndexedDB()
+
+    if (!buffer) {
+      // IndexedDBにデータがない場合、ダウンロードして保存
+      // parquet ファイルをダウンロードする
+      const response = await fetch(PARQUET_FILE_URL)
+      buffer = await response.arrayBuffer()
+      // rtc_stats.parquet という名前でバッファを登録する
+      await saveBufferToIndexedDB(buffer)
+    }
+
+    await db.registerFileBuffer('rtc_stats.parquet', new Uint8Array(buffer))
+
     const conn = await db.connect()
     await conn.query(`
       INSTALL parquet;
       LOAD parquet;
       CREATE TABLE rtc_stats AS SELECT *
-      FROM read_parquet('${PARQUET_FILE_URL}');
+      FROM read_parquet('rtc_stats.parquet');
     `)
 
     const scannedElement = document.getElementById('scanned')
@@ -183,10 +182,112 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  document.getElementById('clear')?.addEventListener('click', () => {
+  document.getElementById('clear')?.addEventListener('click', async () => {
     const resultElement = document.getElementById('result')
     if (resultElement) {
       resultElement.innerHTML = ''
     }
+
+    // DuckDBのテーブルを削除
+    const conn = await db.connect()
+    await conn.query('DROP TABLE IF EXISTS rtc_stats;')
+    await conn.close()
+
+    await db.dropFile('rtc_stats.parquet')
+
+    // IndexedDBからファイルを削除
+    try {
+      await deleteBufferFromIndexedDB()
+      console.log('Parquet file deleted from IndexedDB')
+    } catch (error) {
+      console.error('Error deleting Parquet file from IndexedDB:', error)
+    }
+
+    const scannedElement = document.getElementById('scanned')
+    if (scannedElement) {
+      scannedElement.textContent = 'スキャン済み: false'
+    }
+
+    const countedElement = document.getElementById('counted')
+    if (countedElement) {
+      countedElement.textContent = 'カウント: 0'
+    }
+
+    // ボタンの状態を更新
+    if (scanParquetButton) {
+      scanParquetButton.disabled = false
+    }
+    if (samplesButton) {
+      samplesButton.disabled = true
+    }
+    if (aggregationButton) {
+      aggregationButton.disabled = true
+    }
   })
 })
+
+// IndexedDB関連の定数と関数
+
+const DB_NAME = 'ParquetCache'
+const STORE_NAME = 'files'
+const FILE_KEY = 'rtc_stats.parquet'
+
+const getBufferFromIndexedDB = async (): Promise<ArrayBuffer | null> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      db.createObjectStore(STORE_NAME)
+    }
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readonly')
+      const store = transaction.objectStore(STORE_NAME)
+      const getRequest = store.get(FILE_KEY)
+
+      getRequest.onsuccess = () => resolve(getRequest.result)
+      getRequest.onerror = () => reject(getRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
+
+const saveBufferToIndexedDB = async (buffer: ArrayBuffer): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readwrite')
+      const store = transaction.objectStore(STORE_NAME)
+      const putRequest = store.put(buffer, FILE_KEY)
+
+      putRequest.onsuccess = () => resolve()
+      putRequest.onerror = () => reject(putRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
+
+// IndexedDBからファイルを削除する関数を追加
+const deleteBufferFromIndexedDB = async (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readwrite')
+      const store = transaction.objectStore(STORE_NAME)
+      const deleteRequest = store.delete(FILE_KEY)
+
+      deleteRequest.onsuccess = () => resolve()
+      deleteRequest.onerror = () => reject(deleteRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
