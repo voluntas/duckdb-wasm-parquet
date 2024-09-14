@@ -205,12 +205,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const scannedElement = document.getElementById('scanned')
     if (scannedElement) {
-      scannedElement.textContent = 'スキャン済み: false'
+      scannedElement.textContent = 'Scanned: false'
     }
 
     const countedElement = document.getElementById('counted')
     if (countedElement) {
-      countedElement.textContent = 'カウント: 0'
+      countedElement.textContent = 'Counted: 0'
     }
 
     // ボタンの状態を更新
