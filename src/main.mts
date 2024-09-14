@@ -196,10 +196,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  document.getElementById('clear')?.addEventListener('click', () => {
+  document.getElementById('clear')?.addEventListener('click', async () => {
     const resultElement = document.getElementById('result')
     if (resultElement) {
       resultElement.innerHTML = ''
+    }
+
+    await db.dropFile('rtc_stats.parquet')
+
+    // IndexedDBからファイルを削除
+    try {
+      await deleteBufferFromIndexedDB()
+      console.log('Parquet file deleted from IndexedDB')
+    } catch (error) {
+      console.error('Error deleting Parquet file from IndexedDB:', error)
+    }
+
+    const scannedElement = document.getElementById('scanned')
+    if (scannedElement) {
+      scannedElement.textContent = 'スキャン済み: false'
+    }
+
+    const countedElement = document.getElementById('counted')
+    if (countedElement) {
+      countedElement.textContent = 'カウント: 0'
     }
   })
 })
@@ -245,6 +265,25 @@ const saveBufferToIndexedDB = async (buffer: ArrayBuffer): Promise<void> => {
 
       putRequest.onsuccess = () => resolve()
       putRequest.onerror = () => reject(putRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
+
+// IndexedDBからファイルを削除する関数を追加
+const deleteBufferFromIndexedDB = async (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readwrite')
+      const store = transaction.objectStore(STORE_NAME)
+      const deleteRequest = store.delete(FILE_KEY)
+
+      deleteRequest.onsuccess = () => resolve()
+      deleteRequest.onerror = () => reject(deleteRequest.error)
     }
 
     request.onerror = () => reject(request.error)
