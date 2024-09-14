@@ -186,14 +186,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       resultElement.innerHTML = ''
     }
 
-    // DuckDBのテーブルを削除
+    // DuckDB からテーブルを削除
     const conn = await db.connect()
     await conn.query('DROP TABLE IF EXISTS rtc_stats;')
     await conn.close()
 
+    // DuckDB からファイルを削除
     await db.dropFile('rtc_stats.parquet')
 
-    // OPFSからファイルを削除
+    // OPFS からファイルを削除
     try {
       await deleteBufferFromOPFS()
       console.log('Parquet file deleted from OPFS')
@@ -262,4 +263,3 @@ const deleteBufferFromOPFS = async (): Promise<void> => {
     throw error
   }
 }
-
