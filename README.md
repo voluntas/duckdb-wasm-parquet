@@ -6,7 +6,7 @@
 ## 概要
 
 [DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) をブラウザで使用して、
-S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで [OPSF](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に保存し、DuckDB 上で SQL でクエリを実行するお試し用のアプリです。
+S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで [OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に保存し、 OPFS からファイルを読み込んで DuckdB-Wasm に登録し、DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
 
 ## 注意
 
@@ -28,10 +28,11 @@ pnpm run dev
 - ブラウザで `http://localhost:5173/` にアクセスして、`Scan Parquet` ボタンをクリックしてください
 - `Samples (1%)` ボタンをクリックして、サンプリングした 1% のデータを表示してみてください
 - `Aggregation` ボタンをクリックして、集計した結果を表示してみてください
+- `Clear` ボタンで OPFS のファイルを削除します
 
 ## 動作例
 
-[![Image from Gyazo](https://i.gyazo.com/bc66f905f56dbf121e6ae31c8ab2c531.gif)](https://gyazo.com/bc66f905f56dbf121e6ae31c8ab2c531)
+[![Image from Gyazo](https://i.gyazo.com/b9fa2c8cfdb310e7080afec1ac0bf18b.gif)](https://gyazo.com/b9fa2c8cfdb310e7080afec1ac0bf18b)
 
 ## Parquet ファイルについて
 
@@ -46,7 +47,7 @@ DuckDB で集約し Parquet ファイルとして出力したものです。
 
 - この Parquet ファイルは [zstd](https://github.com/facebook/zstd) で圧縮されています
 - この Parquet ファイルは [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) に保存されており、パブリックで誰でもアクセスすることができます
-- この Parquet ファイルの [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) は `http://localhost:5173/` からのアクセスのみを許可しています
+- この Parquet ファイルの [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) は `http://localhost:5173/` からのアクセスを許可しています
 - この Parquet ファイルのライセンスは [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) です
 
 ## OPFS について
