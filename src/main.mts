@@ -48,12 +48,25 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
+    let buffer = await getBufferFromIndexedDB()
+
+    if (!buffer) {
+      // IndexedDBにデータがない場合、ダウンロードして保存
+      // parquet ファイルをダウンロードする
+      const response = await fetch(PARQUET_FILE_URL)
+      buffer = await response.arrayBuffer()
+      // rtc_stats.parquet という名前でバッファを登録する
+      await saveBufferToIndexedDB(buffer)
+    }
+
+    await db.registerFileBuffer('rtc_stats.parquet', new Uint8Array(buffer))
+
     const conn = await db.connect()
     await conn.query(`
       INSTALL parquet;
       LOAD parquet;
       CREATE TABLE rtc_stats AS SELECT *
-      FROM read_parquet('${PARQUET_FILE_URL}');
+      FROM read_parquet('rtc_stats.parquet');
     `)
 
     const scannedElement = document.getElementById('scanned')
@@ -190,3 +203,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 })
+
+// IndexedDB関連の定数と関数
+
+const DB_NAME = 'ParquetCache'
+const STORE_NAME = 'files'
+const FILE_KEY = 'rtc_stats.parquet'
+
+const getBufferFromIndexedDB = async (): Promise<ArrayBuffer | null> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onupgradeneeded = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      db.createObjectStore(STORE_NAME)
+    }
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readonly')
+      const store = transaction.objectStore(STORE_NAME)
+      const getRequest = store.get(FILE_KEY)
+
+      getRequest.onsuccess = () => resolve(getRequest.result)
+      getRequest.onerror = () => reject(getRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
+
+const saveBufferToIndexedDB = async (buffer: ArrayBuffer): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, 1)
+
+    request.onsuccess = (event) => {
+      const db = (event.target as IDBOpenDBRequest).result
+      const transaction = db.transaction(STORE_NAME, 'readwrite')
+      const store = transaction.objectStore(STORE_NAME)
+      const putRequest = store.put(buffer, FILE_KEY)
+
+      putRequest.onsuccess = () => resolve()
+      putRequest.onerror = () => reject(putRequest.error)
+    }
+
+    request.onerror = () => reject(request.error)
+  })
+}
