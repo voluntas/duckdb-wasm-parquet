@@ -1,19 +1,6 @@
 import * as duckdb from '@duckdb/duckdb-wasm'
-import eh_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?url'
-import mvp_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-mvp.worker.js?url'
-import duckdb_wasm_eh from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm?url'
-
-const MANUAL_BUNDLES: duckdb.DuckDBBundles = {
-  mvp: {
-    mainModule: duckdb_wasm,
-    mainWorker: mvp_worker,
-  },
-  eh: {
-    mainModule: duckdb_wasm_eh,
-    mainWorker: eh_worker,
-  },
-}
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
+import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
@@ -27,11 +14,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (button) button.disabled = true
   }
 
-  const bundle = await duckdb.selectBundle(MANUAL_BUNDLES)
-  const worker = new Worker(bundle.mainWorker ?? '')
+  const worker = new duckdb_worker()
   const logger = new duckdb.ConsoleLogger()
   const db = new duckdb.AsyncDuckDB(logger, worker)
-  await db.instantiate(bundle.mainModule, bundle.pthreadWorker)
+  await db.instantiate(duckdb_wasm)
 
   const conn = await db.connect()
   await conn.query(`
