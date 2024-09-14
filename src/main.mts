@@ -34,15 +34,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
-    let buffer = await getBufferFromIndexedDB()
+    let buffer = await getBufferFromOPFS()
 
     if (!buffer) {
-      // IndexedDBにデータがない場合、ダウンロードして保存
-      // parquet ファイルをダウンロードする
+      // OPFSにデータがない場合、ダウンロードして保存
       const response = await fetch(PARQUET_FILE_URL)
       buffer = await response.arrayBuffer()
-      // rtc_stats.parquet という名前でバッファを登録する
-      await saveBufferToIndexedDB(buffer)
+      await saveBufferToOPFS(buffer)
     }
 
     await db.registerFileBuffer('rtc_stats.parquet', new Uint8Array(buffer))
@@ -195,12 +193,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await db.dropFile('rtc_stats.parquet')
 
-    // IndexedDBからファイルを削除
+    // OPFSからファイルを削除
     try {
-      await deleteBufferFromIndexedDB()
-      console.log('Parquet file deleted from IndexedDB')
+      await deleteBufferFromOPFS()
+      console.log('Parquet file deleted from OPFS')
     } catch (error) {
-      console.error('Error deleting Parquet file from IndexedDB:', error)
+      console.error('Error deleting Parquet file from OPFS:', error)
     }
 
     const scannedElement = document.getElementById('scanned')
@@ -226,68 +224,42 @@ document.addEventListener('DOMContentLoaded', async () => {
   })
 })
 
-// IndexedDB関連の定数と関数
+// OPFS関連の関数
 
-const DB_NAME = 'ParquetCache'
-const STORE_NAME = 'files'
-const FILE_KEY = 'rtc_stats.parquet'
+const FILE_NAME = 'rtc_stats.parquet'
 
-const getBufferFromIndexedDB = async (): Promise<ArrayBuffer | null> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-      db.createObjectStore(STORE_NAME)
-    }
-
-    request.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-      const transaction = db.transaction(STORE_NAME, 'readonly')
-      const store = transaction.objectStore(STORE_NAME)
-      const getRequest = store.get(FILE_KEY)
-
-      getRequest.onsuccess = () => resolve(getRequest.result)
-      getRequest.onerror = () => reject(getRequest.error)
-    }
-
-    request.onerror = () => reject(request.error)
-  })
+const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
+  try {
+    const root = await navigator.storage.getDirectory()
+    const fileHandle = await root.getFileHandle(FILE_NAME)
+    const file = await fileHandle.getFile()
+    return await file.arrayBuffer()
+  } catch (error) {
+    console.error('Error reading file from OPFS:', error)
+    return null
+  }
 }
 
-const saveBufferToIndexedDB = async (buffer: ArrayBuffer): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-
-    request.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-      const transaction = db.transaction(STORE_NAME, 'readwrite')
-      const store = transaction.objectStore(STORE_NAME)
-      const putRequest = store.put(buffer, FILE_KEY)
-
-      putRequest.onsuccess = () => resolve()
-      putRequest.onerror = () => reject(putRequest.error)
-    }
-
-    request.onerror = () => reject(request.error)
-  })
+const saveBufferToOPFS = async (buffer: ArrayBuffer): Promise<void> => {
+  try {
+    const root = await navigator.storage.getDirectory()
+    const fileHandle = await root.getFileHandle(FILE_NAME, { create: true })
+    const writable = await fileHandle.createWritable()
+    await writable.write(buffer)
+    await writable.close()
+  } catch (error) {
+    console.error('Error saving file to OPFS:', error)
+    throw error
+  }
 }
 
-// IndexedDBからファイルを削除する関数を追加
-const deleteBufferFromIndexedDB = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-
-    request.onsuccess = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-      const transaction = db.transaction(STORE_NAME, 'readwrite')
-      const store = transaction.objectStore(STORE_NAME)
-      const deleteRequest = store.delete(FILE_KEY)
-
-      deleteRequest.onsuccess = () => resolve()
-      deleteRequest.onerror = () => reject(deleteRequest.error)
-    }
-
-    request.onerror = () => reject(request.error)
-  })
+const deleteBufferFromOPFS = async (): Promise<void> => {
+  try {
+    const root = await navigator.storage.getDirectory()
+    await root.removeEntry(FILE_NAME)
+  } catch (error) {
+    console.error('Error deleting file from OPFS:', error)
+    throw error
+  }
 }
+
