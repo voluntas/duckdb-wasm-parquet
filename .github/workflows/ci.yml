@@ -39,5 +39,6 @@ jobs:
       - run: pnpm --version
       - run: pnpm install
       - run: pnpm run build
+      # TODO: firefox/webkit も追加する
       - run: pnpm exec playwright install chromium --with-deps
       - run: pnpm test:playwright
