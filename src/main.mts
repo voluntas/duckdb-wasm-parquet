@@ -34,14 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
-    let buffer = await getBufferFromOPFS()
-
-    if (!buffer) {
-      // OPFSにデータがない場合、ダウンロードして保存
-      const response = await fetch(PARQUET_FILE_URL)
-      buffer = await response.arrayBuffer()
-      await saveBufferToOPFS(buffer)
-    }
+    const buffer = await getParquetBuffer(PARQUET_FILE_URL)
 
     await db.registerFileBuffer('rtc_stats.parquet', new Uint8Array(buffer))
 
@@ -195,11 +188,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     await db.dropFile('rtc_stats.parquet')
 
     // OPFS からファイルを削除
-    try {
-      await deleteBufferFromOPFS()
-      console.log('Parquet file deleted from OPFS')
-    } catch (error) {
-      console.error('Error deleting Parquet file from OPFS:', error)
+    if ('createWritable' in FileSystemFileHandle.prototype) {
+      try {
+        await deleteBufferFromOPFS()
+        console.log('Parquet file deleted from OPFS')
+      } catch (error) {
+        console.error('Error deleting Parquet file from OPFS:', error)
+      }
     }
 
     const scannedElement = document.getElementById('scanned')
@@ -242,15 +237,19 @@ const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
 }
 
 const saveBufferToOPFS = async (buffer: ArrayBuffer): Promise<void> => {
-  try {
-    const root = await navigator.storage.getDirectory()
-    const fileHandle = await root.getFileHandle(FILE_NAME, { create: true })
-    const writable = await fileHandle.createWritable()
-    await writable.write(buffer)
-    await writable.close()
-  } catch (error) {
-    console.error('Error saving file to OPFS:', error)
-    throw error
+  if ('createWritable' in FileSystemFileHandle.prototype) {
+    try {
+      const root = await navigator.storage.getDirectory()
+      const fileHandle = await root.getFileHandle(FILE_NAME, { create: true })
+      const writable = await fileHandle.createWritable()
+      await writable.write(buffer)
+      await writable.close()
+    } catch (error) {
+      console.error('Error saving file to OPFS:', error)
+      throw error
+    }
+  } else {
+    console.warn('createWritable is not supported. Data will not be saved to OPFS.')
   }
 }
 
@@ -262,4 +261,21 @@ const deleteBufferFromOPFS = async (): Promise<void> => {
     console.error('Error deleting file from OPFS:', error)
     throw error
   }
+}
+
+const getParquetBuffer = async (PARQUET_FILE_URL: string): Promise<ArrayBuffer> => {
+  let buffer = null
+  if ('createWritable' in FileSystemFileHandle.prototype) {
+    buffer = await getBufferFromOPFS()
+  }
+
+  if (!buffer) {
+    const response = await fetch(PARQUET_FILE_URL)
+    buffer = await response.arrayBuffer()
+    if ('createWritable' in FileSystemFileHandle.prototype) {
+      await saveBufferToOPFS(buffer)
+    }
+  }
+
+  return buffer
 }
