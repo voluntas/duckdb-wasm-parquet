@@ -202,6 +202,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       resultElement.innerHTML = ''
     }
 
+    // DuckDBのテーブルを削除
+    const conn = await db.connect()
+    await conn.query('DROP TABLE IF EXISTS rtc_stats;')
+    await conn.close()
+
     await db.dropFile('rtc_stats.parquet')
 
     // IndexedDBからファイルを削除
@@ -220,6 +225,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const countedElement = document.getElementById('counted')
     if (countedElement) {
       countedElement.textContent = 'カウント: 0'
+    }
+
+    // ボタンの状態を更新
+    if (scanParquetButton) {
+      scanParquetButton.disabled = false
+    }
+    if (samplesButton) {
+      samplesButton.disabled = true
+    }
+    if (aggregationButton) {
+      aggregationButton.disabled = true
     }
   })
 })
