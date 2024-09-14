@@ -59,6 +59,12 @@ DuckDB で集約し Parquet ファイルとして出力したものです。
 
 この仕組みを使う事で解析用のファイルを再度ダウンロードする必要がなくなります。
 
+### Safari
+
+Safari の OPFS は [FileSystemFileHandle: createWritable\(\) method](https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable) が実装されていないため、Safari では OPFS は利用せず毎回 fetch するようにしています。
+
+[231706 – Implement File System standard](https://bugs.webkit.org/show_bug.cgi?id=231706)
+
 ### DuckDB でアクセスしてみる
 
 ```sql
