@@ -1,5 +1,6 @@
 # CHANGES
 
+- [CHANGE] parquet ファイルをより大きめのサイズに置き換える
 - [FIX] vite.config.mts を読みやすくする
 - [ADD] GitHub Pages デプロイ時に GitHub Actions の env で NODE_ENV を production にする
 - [ADD] GitHub Pages にデプロイする

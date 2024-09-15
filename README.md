@@ -37,7 +37,7 @@ pnpm run dev
 ## Parquet ファイルについて
 
 以下の URL でお試し用の [Parquet](https://parquet.apache.org/) ファイルを取得することができます。
-<https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet>
+<https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet>
 
 この Parquet ファイルは[時雨堂](https://shiguredo.jp/)の [WebRTC SFU Sora](https://sora.shiguredo.jp/) が出力する
 クライアントから送られてくる [WebRTC 統計情報](https://www.w3.org/TR/webrtc-stats/) を
@@ -68,56 +68,56 @@ Safari の OPFS は [FileSystemFileHandle: createWritable\(\) method](https://de
 ### DuckDB でアクセスしてみる
 
 ```sql
-D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet');
+D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet';
 ┌──────────────────────┬──────────────────────┬─────────────────┬───┬───────────────────┬─────────────────────┐
 │    connection_id     │          id          │      label      │ … │   rtc_timestamp   │      rtc_type       │
 │       varchar        │       varchar        │     varchar     │   │      double       │       varchar       │
 ├──────────────────────┼──────────────────────┼─────────────────┼───┼───────────────────┼─────────────────────┤
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ media-playout       │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ outbound-rtp        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ outbound-rtp        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │   1725110873532.0 │ remote-inbound-rtp  │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │   1725110877738.0 │ remote-inbound-rtp  │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ media-source        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ media-source        │
-│ JYCQZ5HC3938558D2N…  │ D4WM4JQMJ17CHA8XXK…  │ WebRTC SFU Sora │ … │ 1725110878505.041 │ transport           │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ media-playout       │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ GGJREB7S6D6XXDYS1Y…  │ WebRTC SFU Sora │ … │ 1725110893504.201 │ data-channel        │
-│          ·           │          ·           │        ·        │ · │         ·         │      ·              │
-│          ·           │          ·           │        ·        │ · │         ·         │      ·              │
-│          ·           │          ·           │        ·        │ · │         ·         │      ·              │
-│ SV5WZSYWFN5HH2TQFG…  │ PJC908KTKX0NS9K81F…  │ WebRTC SFU Sora │ … │ 1725121716070.904 │ media-source        │
-│ SV5WZSYWFN5HH2TQFG…  │ PJC908KTKX0NS9K81F…  │ WebRTC SFU Sora │ … │ 1725121716070.904 │ transport           │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ media-playout       │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ candidate-pair      │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ data-channel        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ inbound-rtp         │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ inbound-rtp         │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ outbound-rtp        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ outbound-rtp        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │   1725121721329.0 │ remote-inbound-rtp  │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │   1725121723603.0 │ remote-inbound-rtp  │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │   1725121721445.0 │ remote-outbound-rtp │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │   1725121724271.0 │ remote-outbound-rtp │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ media-source        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ media-source        │
-│ JYCQZ5HC3938558D2N…  │ MCJ3JZNT4N5YN84HNR…  │ WebRTC SFU Sora │ … │ 1725121724397.442 │ transport           │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ media-playout       │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ certificate         │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ certificate         │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ codec               │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ codec               │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ candidate-pair      │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ data-channel        │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ data-channel        │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ data-channel        │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ data-channel        │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ local-candidate     │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ local-candidate     │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ local-candidate     │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ local-candidate     │
+│ F6WJ4SY2HD63Z25XD3…  │ DE5MC2JG3H2PK667ZG…  │ WebRTC SFU Sora │ … │ 1726394702721.481 │ local-candidate     │
+│          ·           │          ·           │        ·        │ · │         ·         │       ·             │
+│          ·           │          ·           │        ·        │ · │         ·         │       ·             │
+│          ·           │          ·           │        ·        │ · │         ·         │       ·             │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ candidate-pair      │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ data-channel        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ data-channel        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ data-channel        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ data-channel        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ inbound-rtp         │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ inbound-rtp         │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ inbound-rtp         │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ inbound-rtp         │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ outbound-rtp        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ outbound-rtp        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403011612.0 │ remote-inbound-rtp  │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403014647.0 │ remote-inbound-rtp  │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403013580.0 │ remote-outbound-rtp │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403011612.0 │ remote-outbound-rtp │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403015068.0 │ remote-outbound-rtp │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │   1726403014750.0 │ remote-outbound-rtp │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ media-source        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ media-source        │
+│ ZVWETDA641527D2A6T…  │ S31C88V2SX7M76DD6M…  │ WebRTC SFU Sora │ … │ 1726403015487.149 │ transport           │
 ├──────────────────────┴──────────────────────┴─────────────────┴───┴───────────────────┴─────────────────────┤
-│ 15329 rows (40 shown)                                                                  20 columns (5 shown) │
+│ 83911 rows (40 shown)                                                                  20 columns (5 shown) │
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
