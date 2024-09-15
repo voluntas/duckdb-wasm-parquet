@@ -28,37 +28,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   `)
   await conn.close()
 
-  // DuckDBの初期化が完了したらボタンを有効化
-  if (scanParquetButton) {
+  // ここで OPFS にあるかどうかをチェックしてあったらすぐに反映するようにする
+  const buffer = await getBufferFromOPFS()
+  if (buffer) {
+    await loadParquetFile(db, buffer)
+    await updateStatus(db)
+
+    // ここは OPFS から読み込んだので、OPFS が使われていることを示す
+    const opfsStatusElement = document.getElementById('opfsStatus')
+    if (opfsStatusElement) {
+      opfsStatusElement.textContent = 'OPFS: true'
+    }
+
+    // scan-parquet ボタンを無効化し、他のボタンを有効化
+    if (scanParquetButton) {
+      scanParquetButton.disabled = true
+    }
+    if (samplesButton) {
+      samplesButton.disabled = false
+    }
+    if (aggregationButton) {
+      aggregationButton.disabled = false
+    }
+    if (clearButton) {
+      clearButton.disabled = false
+    }
+  }
+
+  // DuckDB の初期化が完了して、OPFS にファイルが無い場合はボタンを有効化
+  if (scanParquetButton && !buffer) {
     scanParquetButton.disabled = false
   }
 
   document.getElementById('scan-parquet')?.addEventListener('click', async () => {
     const buffer = await getParquetBuffer(PARQUET_FILE_URL)
 
-    await db.registerFileBuffer('rtc_stats.parquet', new Uint8Array(buffer))
-
-    const conn = await db.connect()
-    await conn.query(`
-      INSTALL parquet;
-      LOAD parquet;
-      CREATE TABLE rtc_stats AS SELECT *
-      FROM read_parquet('rtc_stats.parquet');
-    `)
-
-    const scannedElement = document.getElementById('scanned')
-    if (scannedElement) {
-      scannedElement.textContent = 'Scanned: true'
-    }
-
-    const result = await conn.query(`
-      SELECT count(*) AS count FROM rtc_stats;
-    `)
-
-    const resultElement = document.getElementById('counted')
-    if (resultElement) {
-      resultElement.textContent = `Count: ${result.toArray()[0].count}`
-    }
+    await loadParquetFile(db, buffer)
+    await updateStatus(db)
 
     // scan-parquetボタンを無効化し、他のボタンを有効化
     if (scanParquetButton) {
@@ -197,6 +203,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    const opfsStatusElement = document.getElementById('opfsStatus')
+    if (opfsStatusElement) {
+      opfsStatusElement.textContent = 'OPFS: false'
+    }
+
     const scannedElement = document.getElementById('scanned')
     if (scannedElement) {
       scannedElement.textContent = 'Scanned: false'
@@ -224,14 +235,47 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 const FILE_NAME = 'rtc_stats.parquet'
 
+const loadParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Promise<void> => {
+  await db.registerFileBuffer(`${FILE_NAME}`, new Uint8Array(buffer))
+  const conn = await db.connect()
+  await conn.query(`
+    INSTALL parquet;
+    LOAD parquet;
+    CREATE TABLE rtc_stats AS SELECT *
+    FROM read_parquet('${FILE_NAME}');
+  `)
+  await conn.close()
+}
+
+const updateStatus = async (db: duckdb.AsyncDuckDB): Promise<void> => {
+  const conn = await db.connect()
+  const result = await conn.query(`
+    SELECT count(*) AS count FROM rtc_stats;
+  `)
+  const scannedResultElement = document.getElementById('scanned')
+  if (scannedResultElement) {
+    scannedResultElement.textContent = 'Scanned: true'
+  }
+  const countedResultElement = document.getElementById('counted')
+  if (countedResultElement) {
+    countedResultElement.textContent = `Counted: ${result.toArray()[0].count}`
+  }
+  await conn.close()
+}
+
 const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
-  try {
-    const root = await navigator.storage.getDirectory()
-    const fileHandle = await root.getFileHandle(FILE_NAME)
-    const file = await fileHandle.getFile()
-    return await file.arrayBuffer()
-  } catch (error) {
-    console.error('Error reading file from OPFS:', error)
+  if ('createWritable' in FileSystemFileHandle.prototype) {
+    try {
+      const root = await navigator.storage.getDirectory()
+      const fileHandle = await root.getFileHandle(FILE_NAME)
+      const file = await fileHandle.getFile()
+      return await file.arrayBuffer()
+    } catch (error) {
+      console.error('Error reading file from OPFS:', error)
+      return null
+    }
+  } else {
+    console.warn('createWritable is not supported. Data will not be saved to OPFS.')
     return null
   }
 }
@@ -244,6 +288,11 @@ const saveBufferToOPFS = async (buffer: ArrayBuffer): Promise<void> => {
       const writable = await fileHandle.createWritable()
       await writable.write(buffer)
       await writable.close()
+
+      const opfsStatusElement = document.getElementById('opfsStatus')
+      if (opfsStatusElement) {
+        opfsStatusElement.textContent = 'OPFS: true'
+      }
     } catch (error) {
       console.error('Error saving file to OPFS:', error)
       throw error
@@ -267,14 +316,20 @@ const getParquetBuffer = async (PARQUET_FILE_URL: string): Promise<ArrayBuffer> 
   let buffer = null
   if ('createWritable' in FileSystemFileHandle.prototype) {
     buffer = await getBufferFromOPFS()
+    if (buffer) {
+      // ここは OPFS から読み込んだので、OPFS が使われていることを示す
+      const opfsStatusElement = document.getElementById('opfsStatus')
+      if (opfsStatusElement) {
+        opfsStatusElement.textContent = 'OPFS: true'
+      }
+      return buffer
+    }
   }
 
   if (!buffer) {
     const response = await fetch(PARQUET_FILE_URL)
     buffer = await response.arrayBuffer()
-    if ('createWritable' in FileSystemFileHandle.prototype) {
-      await saveBufferToOPFS(buffer)
-    }
+    await saveBufferToOPFS(buffer)
   }
 
   return buffer
