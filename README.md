@@ -32,7 +32,7 @@ pnpm run dev
 
 ## 動作例
 
-[![Image from Gyazo](https://i.gyazo.com/b9fa2c8cfdb310e7080afec1ac0bf18b.gif)](https://gyazo.com/b9fa2c8cfdb310e7080afec1ac0bf18b)
+[![Image from Gyazo](https://i.gyazo.com/36769409b57c70ad4ca6ce2dbee643b8.gif)](https://gyazo.com/36769409b57c70ad4ca6ce2dbee643b8)
 
 ## Parquet ファイルについて
 
