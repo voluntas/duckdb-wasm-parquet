@@ -6,7 +6,7 @@
 ## 概要
 
 [DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) をブラウザで使用して、
-S3 互換オブジェクトストレージにある Parquet ファイルを読み込んで [OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に保存し、 OPFS からファイルを読み込んで DuckdB-Wasm に登録し、DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
+S3 互換オブジェクトストレージにある [Parquet](https://parquet.apache.org/) ファイルを読み込んで [OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に保存し、 OPFS からファイルを読み込んで DuckdB-Wasm に登録し、DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
 
 ## 注意
 
