@@ -21,7 +21,7 @@ S3 互換オブジェクトストレージにある Parquet ファイルを読�
 ```sh
 pnpm install
 mv .env.template .env
-# https://duckdb-wasm.shiguredo.jp/ES6VB3580N3R7EGKGT0R9NKWPR.parquet を設定する
+# https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet を設定する
 pnpm run dev
 ```
 
