@@ -247,6 +247,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (aggregationButton) {
       aggregationButton.disabled = true
     }
+    if (clearButton) {
+      clearButton.disabled = true
+    }
+    if (searchInput) {
+      searchInput.disabled = true
+    }
   })
 })
 
