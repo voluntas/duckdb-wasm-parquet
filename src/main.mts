@@ -95,6 +95,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (clearButton) {
       clearButton.disabled = false
     }
+    if (searchInput) {
+      searchInput.disabled = false
+    }
 
     await conn.close()
   })
