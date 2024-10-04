@@ -1,6 +1,6 @@
 import * as duckdb from '@duckdb/duckdb-wasm'
-import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
 import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker'
+import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
@@ -8,10 +8,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   const samplesButton = document.getElementById('samples') as HTMLButtonElement | null
   const aggregationButton = document.getElementById('aggregation') as HTMLButtonElement | null
   const clearButton = document.getElementById('clear') as HTMLButtonElement | null
+  const searchInput = document.getElementById('search') as HTMLInputElement | null
 
   // すべてのボタンを初期状態で無効化
-  for (const button of [scanParquetButton, samplesButton, aggregationButton, clearButton]) {
+  for (const button of [
+    scanParquetButton,
+    samplesButton,
+    aggregationButton,
+    clearButton,
+    searchInput,
+  ]) {
     if (button) button.disabled = true
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', async () => {
+      await performSearch(db, searchInput.value)
+    })
   }
 
   const worker = new duckdb_worker()
@@ -52,6 +65,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (clearButton) {
       clearButton.disabled = false
+    }
+    if (searchInput) {
+      searchInput.disabled = false
     }
   }
 
@@ -230,6 +246,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 })
+
+// 検索を実行する関数
+const performSearch = async (db: duckdb.AsyncDuckDB, searchTerm: string): Promise<void> => {
+  const resultElement = document.getElementById('result')
+  if (!resultElement) return
+
+  // 検索語が空の場合、結果をクリアして終了
+  if (!searchTerm.trim()) {
+    resultElement.innerHTML = ''
+    return
+  }
+
+  const conn = await db.connect()
+  const result = await conn.query(`
+    SELECT timestamp, connection_id, rtc_type
+    FROM rtc_stats
+    WHERE connection_id LIKE '%${searchTerm}%'
+       OR channel_id LIKE '%${searchTerm}%'
+       OR timestamp LIKE '%${searchTerm}%'
+       OR rtc_type LIKE '%${searchTerm}%'
+    USING SAMPLE 1 PERCENT (bernoulli);
+  `)
+
+  const table = document.createElement('table')
+  const headers = ['timestamp', 'connection_id', 'rtc_type']
+
+  const headerRow = document.createElement('tr')
+  headerRow.innerHTML = headers.map((header) => `<th>${header}</th>`).join('')
+  table.appendChild(headerRow)
+
+  const rows = result.toArray().map((row) => {
+    const parsedRow = JSON.parse(row)
+    const tr = document.createElement('tr')
+    tr.innerHTML = headers.map((header) => `<td>${parsedRow[header]}</td>`).join('')
+    return tr
+  })
+
+  table.append(...rows)
+
+  resultElement.innerHTML = ''
+  resultElement.appendChild(table)
+
+  await conn.close()
+}
 
 // OPFS関連の関数
 

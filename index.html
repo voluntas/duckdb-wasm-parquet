@@ -37,6 +37,19 @@
     #result tr:hover {
       background-color: #f5f5f5;
     }
+
+    #search {
+      width: 50%;
+      /* 幅を50%に変更 */
+      max-width: 500px;
+      /* 最大幅を設定 */
+      padding: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      display: inline-block;
+    }
   </style>
 </head>
 
@@ -50,6 +63,8 @@
     <button id="samples">Samples (1%)</button>
     <button id="aggregation">Aggregation</button>
     <button id="clear">Clear</button>
+    <br>
+    <input type="text" id="search" placeholder="インスタント検索...">
     <div id="result"></div>
   </div>
 
