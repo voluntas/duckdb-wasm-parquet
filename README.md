@@ -34,6 +34,12 @@ pnpm run dev
 
 [![Image from Gyazo](https://i.gyazo.com/36769409b57c70ad4ca6ce2dbee643b8.gif)](https://gyazo.com/36769409b57c70ad4ca6ce2dbee643b8)
 
+### インスタント検索
+
+毎回 SQL を実行しています。
+
+[![Image from Gyazo](https://i.gyazo.com/2dd16bb90cd7756a836eab287dc77e49.gif)](https://gyazo.com/2dd16bb90cd7756a836eab287dc77e49)
+
 ## Parquet ファイルについて
 
 以下の URL でお試し用の [Parquet](https://parquet.apache.org/) ファイルを取得することができます。
@@ -120,6 +126,10 @@ D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JD
 │ 83911 rows (40 shown)                                                                  20 columns (5 shown) │
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+## 記事
+
+[DuckDB/DuckDB\-Wasm を利用した低コストでの可視化](https://zenn.dev/shiguredo/articles/duckdb-wasm-s3-parquet-opfs)
 
 ## ライセンス
 
