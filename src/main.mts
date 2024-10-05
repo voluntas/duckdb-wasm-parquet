@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DuckDB からファイルを削除
     await db.dropFile('rtc_stats.parquet')
 
-    // OPFS から���ァイルを削除
+    // OPFS からファイルを削除
     if ('createWritable' in FileSystemFileHandle.prototype) {
       try {
         await deleteBufferFromOPFS()
