@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const worker = new duckdb_worker()
   const logger = new duckdb.ConsoleLogger()
   const db = new duckdb.AsyncDuckDB(logger, worker)
+
   await db.instantiate(duckdb_wasm)
 
   const conn = await db.connect()
@@ -51,6 +52,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const opfsStatusElement = document.getElementById('opfsStatus')
     if (opfsStatusElement) {
       opfsStatusElement.textContent = 'OPFS: true'
+    }
+
+    const duckdbVersionElement = document.getElementById('duckdb-version')
+    if (duckdbVersionElement) {
+      const version = await db.getVersion()
+      duckdbVersionElement.textContent = `DuckDB: ${version}`
+    }
+
+    const duckdbWasmVersionElement = document.getElementById('duckdb-wasm-version')
+    if (duckdbWasmVersionElement) {
+      const version = duckdb.PACKAGE_VERSION
+      duckdbWasmVersionElement.textContent = `DuckDB-Wasm: ${version}`
     }
 
     // scan-parquet ボタンを無効化し、他のボタンを有効化
