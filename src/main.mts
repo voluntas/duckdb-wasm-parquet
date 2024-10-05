@@ -33,6 +33,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await db.instantiate(duckdb_wasm)
 
+  const duckdbVersionElement = document.getElementById('duckdb-version')
+  if (duckdbVersionElement) {
+    const version = await db.getVersion()
+    duckdbVersionElement.textContent = `DuckDB: ${version}`
+  }
+
+  const duckdbWasmVersionElement = document.getElementById('duckdb-wasm-version')
+  if (duckdbWasmVersionElement) {
+    const version = duckdb.PACKAGE_VERSION
+    duckdbWasmVersionElement.textContent = `DuckDB-Wasm: ${version}`
+  }
+
   const conn = await db.connect()
   await conn.query(`
     INSTALL parquet;
@@ -52,18 +64,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const opfsStatusElement = document.getElementById('opfsStatus')
     if (opfsStatusElement) {
       opfsStatusElement.textContent = 'OPFS: true'
-    }
-
-    const duckdbVersionElement = document.getElementById('duckdb-version')
-    if (duckdbVersionElement) {
-      const version = await db.getVersion()
-      duckdbVersionElement.textContent = `DuckDB: ${version}`
-    }
-
-    const duckdbWasmVersionElement = document.getElementById('duckdb-wasm-version')
-    if (duckdbWasmVersionElement) {
-      const version = duckdb.PACKAGE_VERSION
-      duckdbWasmVersionElement.textContent = `DuckDB-Wasm: ${version}`
     }
 
     // scan-parquet ボタンを無効化し、他のボタンを有効化
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('samples')?.addEventListener('click', async () => {
     const conn = await db.connect()
-    // 10% のサンプルを取得
+    // 10% のサ��プルを取得
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
       FROM rtc_stats
@@ -225,7 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DuckDB からファイルを削除
     await db.dropFile('rtc_stats.parquet')
 
-    // OPFS からファイルを削除
+    // OPFS から���ァイルを削除
     if ('createWritable' in FileSystemFileHandle.prototype) {
       try {
         await deleteBufferFromOPFS()
@@ -362,21 +362,20 @@ const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
   }
 }
 
-const saveBufferToOPFS = async (buffer: ArrayBuffer): Promise<void> => {
+const saveStreamToOPFS = async (stream: ReadableStream): Promise<void> => {
   if ('createWritable' in FileSystemFileHandle.prototype) {
     try {
       const root = await navigator.storage.getDirectory()
       const fileHandle = await root.getFileHandle(FILE_NAME, { create: true })
       const writable = await fileHandle.createWritable()
-      await writable.write(buffer)
-      await writable.close()
+      await stream.pipeTo(writable)
 
       const opfsStatusElement = document.getElementById('opfsStatus')
       if (opfsStatusElement) {
         opfsStatusElement.textContent = 'OPFS: true'
       }
     } catch (error) {
-      console.error('Error saving file to OPFS:', error)
+      console.error('Error occurred while saving file to OPFS:', error)
       throw error
     }
   } else {
@@ -395,24 +394,30 @@ const deleteBufferFromOPFS = async (): Promise<void> => {
 }
 
 const getParquetBuffer = async (PARQUET_FILE_URL: string): Promise<ArrayBuffer> => {
-  let buffer = null
-  if ('createWritable' in FileSystemFileHandle.prototype) {
-    buffer = await getBufferFromOPFS()
-    if (buffer) {
-      // ここは OPFS から読み込んだので、OPFS が使われていることを示す
-      const opfsStatusElement = document.getElementById('opfsStatus')
-      if (opfsStatusElement) {
-        opfsStatusElement.textContent = 'OPFS: true'
-      }
-      return buffer
-    }
-  }
-
-  if (!buffer) {
+  if (!('createWritable' in FileSystemFileHandle.prototype)) {
     const response = await fetch(PARQUET_FILE_URL)
-    buffer = await response.arrayBuffer()
-    await saveBufferToOPFS(buffer)
+    const buffer = await response.arrayBuffer()
+    return buffer
   }
 
+  let buffer = await getBufferFromOPFS()
+  if (buffer) {
+    // ここは OPFS から読み込んだので、OPFS が使われていることを示す
+    const opfsStatusElement = document.getElementById('opfsStatus')
+    if (opfsStatusElement) {
+      opfsStatusElement.textContent = 'OPFS: true'
+    }
+    return buffer
+  }
+
+  const response = await fetch(PARQUET_FILE_URL)
+  if (!response.body) {
+    throw new Error('Failed to fetch parquet file.')
+  }
+  await saveStreamToOPFS(response.body)
+  buffer = await getBufferFromOPFS()
+  if (!buffer) {
+    throw new Error('Failed to retrieve buffer from OPFS.')
+  }
   return buffer
 }
