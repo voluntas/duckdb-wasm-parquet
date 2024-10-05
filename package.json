@@ -25,7 +25,7 @@
     "node": ">=22.8.0"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "1.28.1-dev288.0",
+    "@duckdb/duckdb-wasm": "1.28.1-dev292.0",
     "apache-arrow": "17.0.0"
   }
 }
