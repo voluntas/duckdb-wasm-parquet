@@ -1,8 +1,8 @@
-name: Deploy sora-devtools to Pages
+name: Deploy DuckDB-Wasm Parquet Viewer to GitHub Pages
 
 on:
   push:
-    branches: ["main", "github-pages"]
+    branches: ["main"]
 
 permissions:
   contents: read
