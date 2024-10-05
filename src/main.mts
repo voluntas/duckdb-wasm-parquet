@@ -349,17 +349,21 @@ const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
   if ('createWritable' in FileSystemFileHandle.prototype) {
     try {
       const root = await navigator.storage.getDirectory()
-      const fileHandle = await root.getFileHandle(FILE_NAME)
-      const file = await fileHandle.getFile()
-      return await file.arrayBuffer()
+      const fileHandle = await root.getFileHandle(FILE_NAME, { create: false })
+      if (fileHandle) {
+        const file = await fileHandle.getFile()
+        return await file.arrayBuffer()
+      }
     } catch (error) {
+      if (error instanceof DOMException && error.name === 'NotFoundError') {
+        return null
+      } 
       console.error('Error reading file from OPFS:', error)
-      return null
     }
   } else {
     console.warn('createWritable is not supported. Data will not be saved to OPFS.')
-    return null
   }
+  return null
 }
 
 const saveStreamToOPFS = async (stream: ReadableStream): Promise<void> => {
