@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@duckdb/duckdb-wasm':
-        specifier: 1.28.1-dev292.0
-        version: 1.28.1-dev292.0
+        specifier: 1.28.1-dev293.0
+        version: 1.28.1-dev293.0
       apache-arrow:
         specifier: 17.0.0
         version: 17.0.0
@@ -98,8 +98,8 @@ packages:
   '@bundled-es-modules/tough-cookie@0.1.6':
     resolution: {integrity: sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw==}
 
-  '@duckdb/duckdb-wasm@1.28.1-dev292.0':
-    resolution: {integrity: sha512-UEtqnHsipIAwjDmbx8fbJ2pBg982oAmh81D4qnb+yMGSsZ3NT3KWwYV2H6Nk4pEfWs4pOqj0FJ6ttGn4leip9Q==}
+  '@duckdb/duckdb-wasm@1.28.1-dev293.0':
+    resolution: {integrity: sha512-torTNQt2xFHE1JwzhdguLcHXY0iHe3rR2jXHnKhks3pmaGsSEhH8f+GqhgTpa+NxqQYkkymrmafZUmWCJc/WCg==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -247,8 +247,8 @@ packages:
     resolution: {integrity: sha512-F2VBt7W/mwqEU4bL0RnHNZmC/OxzNx9cOYxHqnXX3MP6ruYvZUZAW9imgN9+h/uBT/oP8Gh888J2OZSbjSeWcg==}
     engines: {node: '>=18'}
 
-  '@inquirer/figures@1.0.6':
-    resolution: {integrity: sha512-yfZzps3Cso2UbM7WlxKwZQh2Hs6plrbjs1QnzQDZhK2DgyCo6D8AaHps9olkNcUFlcYERMqU3uJSp1gmy3s/qQ==}
+  '@inquirer/figures@1.0.7':
+    resolution: {integrity: sha512-m+Trk77mp54Zma6xLkLuY+mvanPxlE4A7yNKs2HBiyZ4UkVs28Mv5c/pgWrHeInx+USHeX/WEPzjrWrcJiQgjw==}
     engines: {node: '>=18'}
 
   '@inquirer/type@1.5.5':
@@ -898,7 +898,7 @@ snapshots:
       tough-cookie: 4.1.4
     optional: true
 
-  '@duckdb/duckdb-wasm@1.28.1-dev292.0':
+  '@duckdb/duckdb-wasm@1.28.1-dev293.0':
     dependencies:
       apache-arrow: 17.0.0
 
@@ -979,7 +979,7 @@ snapshots:
 
   '@inquirer/core@9.2.1':
     dependencies:
-      '@inquirer/figures': 1.0.6
+      '@inquirer/figures': 1.0.7
       '@inquirer/type': 2.0.0
       '@types/mute-stream': 0.0.4
       '@types/node': 22.7.4
@@ -993,7 +993,7 @@ snapshots:
       yoctocolors-cjs: 2.1.2
     optional: true
 
-  '@inquirer/figures@1.0.6':
+  '@inquirer/figures@1.0.7':
     optional: true
 
   '@inquirer/type@1.5.5':
