@@ -127,7 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('samples')?.addEventListener('click', async () => {
     const conn = await db.connect()
-    // 10% のサプルを取得
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
       FROM rtc_stats
@@ -196,24 +195,40 @@ document.addEventListener('DOMContentLoaded', async () => {
           channel_id,
           session_id,
           connection_id,
-          bytes_sent - LAG(bytes_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_sent_diff,
-          bytes_received - LAG(bytes_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_received_diff,
-          packets_sent - LAG(packets_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_sent_diff,
-          packets_received - LAG(packets_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_received_diff
+          bytes_sent_diff,
+          bytes_received_diff,
+          packets_sent_diff,
+          packets_received_diff
         FROM (
           SELECT
-            strftime(time_bucket('15 seconds', strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')), '%Y-%m-%d %H:%M:%S') AS time_bucket,
+            time_bucket,
             channel_id,
             session_id,
             connection_id,
-            MAX(CAST(rtc_data->'$.bytesSent' AS BIGINT)) AS bytes_sent,
-            MAX(CAST(rtc_data->'$.bytesReceived' AS BIGINT)) AS bytes_received,
-            MAX(CAST(rtc_data->'$.packetsSent' AS BIGINT)) AS packets_sent,
-            MAX(CAST(rtc_data->'$.packetsReceived' AS BIGINT)) AS packets_received
-          FROM rtc_stats
-          WHERE rtc_type = 'transport'
-          GROUP BY time_bucket, channel_id, session_id, connection_id
-        )
+            bytes_sent - LAG(bytes_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_sent_diff,
+            bytes_received - LAG(bytes_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_received_diff,
+            packets_sent - LAG(packets_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_sent_diff,
+            packets_received - LAG(packets_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_received_diff
+          FROM (
+            SELECT
+              strftime(time_bucket('15 seconds', strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')), '%Y-%m-%d %H:%M:%S') AS time_bucket,
+              channel_id,
+              session_id,
+              connection_id,
+              MAX(CAST(rtc_data->'$.bytesSent' AS BIGINT)) AS bytes_sent,
+              MAX(CAST(rtc_data->'$.bytesReceived' AS BIGINT)) AS bytes_received,
+              MAX(CAST(rtc_data->'$.packetsSent' AS BIGINT)) AS packets_sent,
+              MAX(CAST(rtc_data->'$.packetsReceived' AS BIGINT)) AS packets_received
+            FROM rtc_stats
+            WHERE rtc_type = 'transport'
+            GROUP BY time_bucket, channel_id, session_id, connection_id
+          )
+        ) 
+        WHERE 
+          bytes_sent_diff IS NOT NULL AND
+          bytes_received_diff IS NOT NULL AND
+          packets_sent_diff IS NOT NULL AND
+          packets_received_diff IS NOT NULL
         ORDER BY time_bucket ASC;
     `)
 
