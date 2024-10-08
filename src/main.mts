@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
   const scanParquetButton = document.getElementById('scan-parquet') as HTMLButtonElement | null
   const samplesButton = document.getElementById('samples') as HTMLButtonElement | null
+  const samplesDownloadParquetButton = document.getElementById(
+    'samples-download-parquet',
+  ) as HTMLButtonElement | null
   const aggregationButton = document.getElementById('aggregation') as HTMLButtonElement | null
   const clearButton = document.getElementById('clear') as HTMLButtonElement | null
   const searchInput = document.getElementById('search') as HTMLInputElement | null
@@ -14,6 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   for (const button of [
     scanParquetButton,
     samplesButton,
+    samplesDownloadParquetButton,
     aggregationButton,
     clearButton,
     searchInput,
@@ -76,6 +80,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (aggregationButton) {
       aggregationButton.disabled = false
     }
+    if (samplesDownloadParquetButton) {
+      samplesDownloadParquetButton.disabled = false
+    }
     if (clearButton) {
       clearButton.disabled = false
     }
@@ -105,6 +112,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (aggregationButton) {
       aggregationButton.disabled = false
     }
+    if (samplesDownloadParquetButton) {
+      samplesDownloadParquetButton.disabled = false
+    }
     if (clearButton) {
       clearButton.disabled = false
     }
@@ -117,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('samples')?.addEventListener('click', async () => {
     const conn = await db.connect()
-    // 10% のサ��プルを取得
+    // 10% のサプルを取得
     const result = await conn.query(`
       SELECT timestamp, connection_id, rtc_type
       FROM rtc_stats
@@ -147,6 +157,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     await conn.close()
+  })
+
+  document.getElementById('samples-download-parquet')?.addEventListener('click', async () => {
+    const conn = await db.connect()
+    try {
+      await conn.query(`
+        COPY (SELECT * FROM rtc_stats
+        USING SAMPLE 1 PERCENT (bernoulli)) TO samples.parquet (FORMAT 'parquet', COMPRESSION 'zstd');
+      `)
+      const parquet_buffer = await db.copyFileToBuffer('samples.parquet')
+      const blob = new Blob([parquet_buffer], { type: 'application/octet-stream' })
+
+      // ダウンロードを自動的に開始
+      const downloadUrl = URL.createObjectURL(blob)
+      const downloadLink = document.createElement('a')
+      downloadLink.href = downloadUrl
+      downloadLink.download = 'samples.parquet'
+      document.body.appendChild(downloadLink)
+      downloadLink.click() // プログラムによる自動クリック
+      document.body.removeChild(downloadLink)
+
+      // 使用後にURLを解放
+      URL.revokeObjectURL(downloadUrl)
+    } catch (error) {
+      console.error('Parquetファイルのダウンロード中にエラーが発生しました:', error)
+    } finally {
+      await conn.close()
+    }
   })
 
   document.getElementById('aggregation')?.addEventListener('click', async () => {
@@ -357,7 +395,7 @@ const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
     } catch (error) {
       if (error instanceof DOMException && error.name === 'NotFoundError') {
         return null
-      } 
+      }
       console.error('Error reading file from OPFS:', error)
     }
   } else {
