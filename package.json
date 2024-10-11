@@ -16,7 +16,7 @@
     "@biomejs/biome": "1.9.3",
     "@playwright/test": "1.48.0",
     "playwright": "1.48.0",
-    "typescript": "5.6.2",
+    "typescript": "5.6.3",
     "vite": "5.4.8",
     "vitest": "2.1.2"
   },
