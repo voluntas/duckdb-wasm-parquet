@@ -14,7 +14,9 @@ S3 互換オブジェクトストレージにある [Parquet](https://parquet.ap
 
 ## とりあえず触ってみたい
 
-[GitHub Pages](https://voluntas.github.io/duckdb-wasm-parquet/)
+[GitHub Pages](https://pages.github.com/) にアプリをデプロイしてあります。
+
+[DuckDB\-Wasm \+ Parquet \+ S3\-compatible object storage \+ OPFS](https://voluntas.github.io/duckdb-wasm-parquet/)
 
 ## ローカルで動作させる方法
 
@@ -43,12 +45,13 @@ pnpm run dev
 ## Parquet ファイルについて
 
 以下の URL でお試し用の [Parquet](https://parquet.apache.org/) ファイルを取得することができます。
+
 <https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet>
 
 この Parquet ファイルは[時雨堂](https://shiguredo.jp/)の [WebRTC SFU Sora](https://sora.shiguredo.jp/) が出力する
 クライアントから送られてくる [WebRTC 統計情報](https://www.w3.org/TR/webrtc-stats/) を
 [Fluent Bit](https://fluentbit.io/) 経由で [S3 互換オブジェクトストレージ](https://www.linode.com/products/object-storage/) へ保存し、
-DuckDB で集約し Parquet ファイルとして出力したものです。
+[DuckDB](https://duckdb.org/) で集約し Parquet ファイルとして出力したものです。
 元々のログは [JSONL](https://jsonlines.org/) 形式で gzip 圧縮です。
 
 - この Parquet ファイルは [zstd](https://github.com/facebook/zstd) で圧縮されています
@@ -60,7 +63,7 @@ DuckDB で集約し Parquet ファイルとして出力したものです。
 
 [Origin private file system \- Web APIs \| MDN](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system)
 
-安全にブラウザでファイルを取り扱う仕組みです。 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) を利用して S3 互換のオブジェクトストレージから Parquet ファイルを取得し、OPFS に保存しています。
+安全にブラウザでファイルを取り扱う仕組みです。 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) と [Stream API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API) を利用して S3 互換のオブジェクトストレージから Parquet ファイルを取得し、ストリームで OPFS に保存しています。
 保存したファイルを DuckDB へ登録し、アクセスできるようにします。
 
 この仕組みを使う事で解析用のファイルを再度ダウンロードする必要がなくなります。
