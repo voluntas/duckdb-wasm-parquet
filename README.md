@@ -77,7 +77,7 @@ Safari の OPFS は [FileSystemFileHandle: createWritable\(\) method](https://de
 ### DuckDB でアクセスしてみる
 
 ```sql
-D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet';
+D SELECT * FROM parquet_scan('https://duckdb-wasm.shiguredo.jp/P78BHZM3MD3MV47JDZG47PB8PW.parquet');
 ┌──────────────────────┬──────────────────────┬─────────────────┬───┬───────────────────┬─────────────────────┐
 │    connection_id     │          id          │      label      │ … │   rtc_timestamp   │      rtc_type       │
 │       varchar        │       varchar        │     varchar     │   │      double       │       varchar       │
