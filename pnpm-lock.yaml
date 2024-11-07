@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@duckdb/duckdb-wasm':
-        specifier: 1.29.1-dev12.0
-        version: 1.29.1-dev12.0
+        specifier: 1.29.1-dev13.0
+        version: 1.29.1-dev13.0
       apache-arrow:
         specifier: 18.0.0
         version: 18.0.0
@@ -98,8 +98,8 @@ packages:
   '@bundled-es-modules/tough-cookie@0.1.6':
     resolution: {integrity: sha512-dvMHbL464C0zI+Yqxbz6kZ5TOEp7GLW+pry/RWndAR8MJQAXZ2rPmIs8tziTZjeIyhSNZgZbCePtfSbdWqStJw==}
 
-  '@duckdb/duckdb-wasm@1.29.1-dev12.0':
-    resolution: {integrity: sha512-5F//RmJcCKz+oB6rwUtmHVe7Jal7FlYOLQB62v0fSTXDIQgO7g6Mncpjp1PzSVZypTi1yXYHaL0Ji5Ilmgd1FA==}
+  '@duckdb/duckdb-wasm@1.29.1-dev13.0':
+    resolution: {integrity: sha512-wJ26+QpFMylwqaqvXLHPmUX5LFqIoLJmpLFrOq/KQd0TTEmTxUA8gqNSATfIKC0LNRwgdsHiX9z0phzXDt1YzA==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -912,7 +912,7 @@ snapshots:
       tough-cookie: 4.1.4
     optional: true
 
-  '@duckdb/duckdb-wasm@1.29.1-dev12.0':
+  '@duckdb/duckdb-wasm@1.29.1-dev13.0':
     dependencies:
       apache-arrow: 17.0.0
 
