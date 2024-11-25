@@ -1,6 +1,14 @@
+import { sql } from '@codemirror/lang-sql'
+import { EditorState } from '@codemirror/state'
+import { panels, showPanel } from '@codemirror/view'
 import * as duckdb from '@duckdb/duckdb-wasm'
 import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker'
 import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
+import { vim } from '@replit/codemirror-vim'
+import { EditorView, basicSetup } from 'codemirror'
+
+let isVimMode = true
+let editor: EditorView
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
@@ -12,6 +20,167 @@ document.addEventListener('DOMContentLoaded', async () => {
   const aggregationButton = document.getElementById('aggregation') as HTMLButtonElement | null
   const clearButton = document.getElementById('clear') as HTMLButtonElement | null
   const searchInput = document.getElementById('search') as HTMLInputElement | null
+
+  const DEFAULT_SQL = `SELECT
+    time_bucket,
+    channel_id,
+    session_id,
+    connection_id,
+    bytes_sent_diff,
+    bytes_received_diff,
+    packets_sent_diff,
+    packets_received_diff
+  FROM (
+    SELECT
+      time_bucket,
+      channel_id,
+      session_id,
+      connection_id,
+      bytes_sent - LAG(bytes_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_sent_diff,
+      bytes_received - LAG(bytes_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_received_diff,
+      packets_sent - LAG(packets_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_sent_diff,
+      packets_received - LAG(packets_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_received_diff
+    FROM (
+      SELECT
+        strftime(time_bucket('15 seconds', strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')), '%Y-%m-%d %H:%M:%S') AS time_bucket,
+        channel_id,
+        session_id,
+        connection_id,
+        MAX(CAST(rtc_data->'$.bytesSent' AS BIGINT)) AS bytes_sent,
+        MAX(CAST(rtc_data->'$.bytesReceived' AS BIGINT)) AS bytes_received,
+        MAX(CAST(rtc_data->'$.packetsSent' AS BIGINT)) AS packets_sent,
+        MAX(CAST(rtc_data->'$.packetsReceived' AS BIGINT)) AS packets_received
+      FROM rtc_stats
+      WHERE rtc_type = 'transport'
+      GROUP BY time_bucket, channel_id, session_id, connection_id
+    )
+  ) 
+  WHERE 
+    bytes_sent_diff IS NOT NULL AND
+    bytes_received_diff IS NOT NULL AND
+    packets_sent_diff IS NOT NULL AND
+    packets_received_diff IS NOT NULL
+  ORDER BY time_bucket ASC;`
+
+  editor = new EditorView({
+    state: EditorState.create({
+      doc: DEFAULT_SQL,
+      extensions: [
+        isVimMode
+          ? vim({
+              status: true,
+            })
+          : [],
+        sql(),
+        basicSetup,
+        EditorState.readOnly.of(false),
+        EditorView.lineWrapping,
+        EditorView.updateListener.of((update) => {
+          if (
+            update.docChanged &&
+            update.state.doc.toString() === '' &&
+            update.transactions.every((tr) => !tr.isUserEvent('input') && !tr.isUserEvent('delete'))
+          ) {
+            editor.dispatch({
+              changes: {
+                from: 0,
+                to: 0,
+                insert: DEFAULT_SQL,
+              },
+            })
+          }
+        }),
+        showPanel.of((view) => {
+          const dom = document.createElement('div')
+          dom.style.cssText = `
+            padding: 4px;
+            display: flex;
+            justify-content: flex-end;
+            background: #f5f5f5;
+            gap: 8px;
+          `
+
+          // Vim mode トグルボタン
+          const vimToggleButton = document.createElement('button')
+          vimToggleButton.textContent = isVimMode ? 'Normal Mode' : 'Vim Mode'
+          vimToggleButton.style.cssText = `
+            padding: 5px 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          `
+          vimToggleButton.addEventListener('click', () => toggleVimMode(db))
+
+          // 実行ボタン
+          const runButton = document.createElement('button')
+          runButton.textContent = 'Run Query'
+          runButton.style.cssText = `
+            padding: 5px 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+          `
+          runButton.addEventListener('click', async () => {
+            const query = view.state.doc.toString()
+            const conn = await db.connect()
+            try {
+              const result = await conn.query(query)
+              const resultElement = document.getElementById('result')
+              if (resultElement) {
+                const table = document.createElement('table')
+                const rows = result.toArray()
+                if (rows.length > 0) {
+                  const headers = Object.keys(JSON.parse(rows[0]))
+
+                  const headerRow = document.createElement('tr')
+                  headerRow.innerHTML = headers.map((header) => `<th>${header}</th>`).join('')
+                  table.appendChild(headerRow)
+
+                  for (const row of rows) {
+                    const parsedRow = JSON.parse(row)
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = headers.map((header) => `<td>${parsedRow[header]}</td>`).join('')
+                    table.appendChild(tr)
+                  }
+
+                  resultElement.innerHTML = ''
+                  resultElement.appendChild(table)
+                }
+              }
+            } catch (error) {
+              console.error('Query execution error:', error)
+            } finally {
+              await conn.close()
+            }
+          })
+
+          dom.appendChild(vimToggleButton)
+          dom.appendChild(runButton)
+          return { dom, bottom: true }
+        }),
+        EditorView.theme({
+          '&': {
+            height: '400px',
+            maxWidth: '800px',
+            position: 'relative',
+            marginBottom: '20px',
+          },
+          '.cm-scroller': {
+            overflow: 'auto',
+          },
+        }),
+      ],
+    }),
+  })
+
+  const editorElement = document.getElementById('editor')
+  if (editorElement) {
+    editorElement.appendChild(editor.dom)
+  }
 
   // すべてのボタンを初期状態で無効化
   for (const button of [
@@ -58,7 +227,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   `)
   await conn.close()
 
-  // ここで OPFS にあるかどうかをチェックしてあったらすぐに反映するようにする
+  // ここで OPFS にあるかどうかをチェックしてあったらすぐに反映するようする
   const buffer = await getBufferFromOPFS()
   if (buffer) {
     await loadParquetFile(db, buffer)
@@ -188,49 +357,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('aggregation')?.addEventListener('click', async () => {
     const conn = await db.connect()
-    // SQL は適当ですので、参考にしないで下さい
-    const result = await conn.query(`
-        SELECT
-          time_bucket,
-          channel_id,
-          session_id,
-          connection_id,
-          bytes_sent_diff,
-          bytes_received_diff,
-          packets_sent_diff,
-          packets_received_diff
-        FROM (
-          SELECT
-            time_bucket,
-            channel_id,
-            session_id,
-            connection_id,
-            bytes_sent - LAG(bytes_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_sent_diff,
-            bytes_received - LAG(bytes_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS bytes_received_diff,
-            packets_sent - LAG(packets_sent) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_sent_diff,
-            packets_received - LAG(packets_received) OVER (PARTITION BY channel_id, session_id, connection_id ORDER BY time_bucket) AS packets_received_diff
-          FROM (
-            SELECT
-              strftime(time_bucket('15 seconds', strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')), '%Y-%m-%d %H:%M:%S') AS time_bucket,
-              channel_id,
-              session_id,
-              connection_id,
-              MAX(CAST(rtc_data->'$.bytesSent' AS BIGINT)) AS bytes_sent,
-              MAX(CAST(rtc_data->'$.bytesReceived' AS BIGINT)) AS bytes_received,
-              MAX(CAST(rtc_data->'$.packetsSent' AS BIGINT)) AS packets_sent,
-              MAX(CAST(rtc_data->'$.packetsReceived' AS BIGINT)) AS packets_received
-            FROM rtc_stats
-            WHERE rtc_type = 'transport'
-            GROUP BY time_bucket, channel_id, session_id, connection_id
-          )
-        ) 
-        WHERE 
-          bytes_sent_diff IS NOT NULL AND
-          bytes_received_diff IS NOT NULL AND
-          packets_sent_diff IS NOT NULL AND
-          packets_received_diff IS NOT NULL
-        ORDER BY time_bucket ASC;
-    `)
+    // SQL は適当ですので参考にしないで下さい
+    const result = await conn.query(DEFAULT_SQL)
 
     const resultElement = document.getElementById('result')
     if (resultElement) {
@@ -278,7 +406,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // DuckDB からファイルを削除
     await db.dropFile('rtc_stats.parquet')
 
-    // OPFS からファイルを削除
+    // OPFS かファイルを削除
     if ('createWritable' in FileSystemFileHandle.prototype) {
       try {
         await deleteBufferFromOPFS()
@@ -327,7 +455,7 @@ const performSearch = async (db: duckdb.AsyncDuckDB, searchTerm: string): Promis
   const resultElement = document.getElementById('result')
   if (!resultElement) return
 
-  // 検索語が空の場合、結果をクリアして終了
+  // 検索語が空の場合、結果クリアして終了
   if (!searchTerm.trim()) {
     resultElement.innerHTML = ''
     return
@@ -477,4 +605,126 @@ const getParquetBuffer = async (PARQUET_FILE_URL: string): Promise<ArrayBuffer> 
     throw new Error('Failed to retrieve buffer from OPFS.')
   }
   return buffer
+}
+
+// トグルボタンを追加
+const toggleVimMode = (db: duckdb.AsyncDuckDB) => {
+  isVimMode = !isVimMode
+
+  // エディタの状態を再構築
+  const currentSQL = editor.state.doc.toString()
+  editor.setState(
+    EditorState.create({
+      doc: currentSQL,
+      extensions: [
+        isVimMode
+          ? vim({
+              status: true,
+            })
+          : [],
+        sql(),
+        basicSetup,
+        EditorState.readOnly.of(false),
+        EditorView.lineWrapping,
+        EditorView.updateListener.of((update) => {
+          if (
+            update.docChanged &&
+            update.state.doc.toString() === '' &&
+            update.transactions.every((tr) => !tr.isUserEvent('input') && !tr.isUserEvent('delete'))
+          ) {
+            editor.dispatch({
+              changes: {
+                from: 0,
+                to: 0,
+                insert: currentSQL,
+              },
+            })
+          }
+        }),
+        showPanel.of((view) => {
+          const dom = document.createElement('div')
+          dom.style.cssText = `
+          padding: 4px;
+          display: flex;
+          justify-content: flex-end;
+          background: #f5f5f5;
+          gap: 8px;
+        `
+
+          // Vim mode トグルボタン
+          const vimToggleButton = document.createElement('button')
+          vimToggleButton.textContent = isVimMode ? 'Normal Mode' : 'Vim Mode'
+          vimToggleButton.style.cssText = `
+          padding: 5px 10px;
+          background: #2196F3;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        `
+          vimToggleButton.addEventListener('click', () => toggleVimMode(db))
+
+          // 実行ボタン
+          const runButton = document.createElement('button')
+          runButton.textContent = 'Run Query'
+          runButton.style.cssText = `
+          padding: 5px 10px;
+          background: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        `
+          runButton.addEventListener('click', async () => {
+            const query = view.state.doc.toString()
+            const conn = await db.connect()
+            try {
+              const result = await conn.query(query)
+              const resultElement = document.getElementById('result')
+              if (resultElement) {
+                const table = document.createElement('table')
+                const rows = result.toArray()
+                if (rows.length > 0) {
+                  const headers = Object.keys(JSON.parse(rows[0]))
+
+                  const headerRow = document.createElement('tr')
+                  headerRow.innerHTML = headers.map((header) => `<th>${header}</th>`).join('')
+                  table.appendChild(headerRow)
+
+                  for (const row of rows) {
+                    const parsedRow = JSON.parse(row)
+                    const tr = document.createElement('tr')
+                    tr.innerHTML = headers.map((header) => `<td>${parsedRow[header]}</td>`).join('')
+                    table.appendChild(tr)
+                  }
+
+                  resultElement.innerHTML = ''
+                  resultElement.appendChild(table)
+                }
+              }
+            } catch (error) {
+              console.error('Query execution error:', error)
+            } finally {
+              await conn.close()
+            }
+          })
+
+          dom.appendChild(vimToggleButton)
+          dom.appendChild(runButton)
+          return { dom, bottom: true }
+        }),
+        EditorView.theme({
+          '&': {
+            height: '400px',
+            maxWidth: '800px',
+            position: 'relative',
+            marginBottom: '20px',
+          },
+          '.cm-scroller': {
+            overflow: 'auto',
+          },
+        }),
+      ],
+    }),
+  )
 }
