@@ -10,6 +10,7 @@ S3 互換オブジェクトストレージにある [Parquet](https://parquet.ap
 
 ## 注意
 
+- TypeScript は適当ですので、参考にしないで下さい
 - SQL は適当ですので、参考にしないで下さい
 
 ## とりあえず触ってみたい
@@ -41,6 +42,12 @@ pnpm run dev
 毎回 SQL を実行しています。
 
 [![Image from Gyazo](https://i.gyazo.com/2dd16bb90cd7756a836eab287dc77e49.gif)](https://gyazo.com/2dd16bb90cd7756a836eab287dc77e49)
+
+### CodeMirror を利用した SQL エディター
+
+Vim キーバインディングを追加してます。
+
+[![Image from Gyazo](https://i.gyazo.com/f3e48f8794e5359e50d8bfeb95fdac9e.png)](https://gyazo.com/f3e48f8794e5359e50d8bfeb95fdac9e)
 
 ## Parquet ファイルについて
 
