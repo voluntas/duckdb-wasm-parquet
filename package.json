@@ -16,16 +16,16 @@
     "@biomejs/biome": "1.9.4",
     "@playwright/test": "1.49.0",
     "playwright": "1.49.0",
-    "typescript": "5.6.3",
+    "typescript": "5.7.2",
     "vite": "5.4.11",
     "vitest": "2.1.5"
   },
-  "packageManager": "pnpm@9.12.1",
+  "packageManager": "pnpm@9.14.2",
   "engines": {
     "node": ">=22.8.0"
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "1.29.1-dev13.0",
+    "@duckdb/duckdb-wasm": "1.29.1-dev15.0",
     "apache-arrow": "18.0.0"
   }
 }
