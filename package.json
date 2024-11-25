@@ -25,7 +25,10 @@
     "node": ">=22.8.0"
   },
   "dependencies": {
+    "@codemirror/lang-sql": "6.8.0",
     "@duckdb/duckdb-wasm": "1.29.1-dev15.0",
-    "apache-arrow": "18.0.0"
+    "@replit/codemirror-vim": "6.2.1",
+    "apache-arrow": "18.0.0",
+    "codemirror": "6.0.1"
   }
 }
