@@ -43,6 +43,12 @@ pnpm run dev
 
 [![Image from Gyazo](https://i.gyazo.com/2dd16bb90cd7756a836eab287dc77e49.gif)](https://gyazo.com/2dd16bb90cd7756a836eab287dc77e49)
 
+### CodeMirror を利用した SQL エディター
+
+Vim キーバインディングを追加してます。
+
+[![Image from Gyazo](https://i.gyazo.com/f3e48f8794e5359e50d8bfeb95fdac9e.png)](https://gyazo.com/f3e48f8794e5359e50d8bfeb95fdac9e)
+
 ## Parquet ファイルについて
 
 以下の URL でお試し用の [Parquet](https://parquet.apache.org/) ファイルを取得することができます。
