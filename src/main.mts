@@ -297,14 +297,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
     })
 
-    const opfsStatusElement = document.getElementById('opfsStatus')
-    if (opfsStatusElement) {
-      opfsStatusElement.textContent = 'OPFS: true'
-    }
+    const conn = await db.connect()
+    await conn.query(`
+      INSTALL parquet;
+      LOAD parquet;
+      INSTALL json;
+      LOAD json;
+    `)
+    await conn.close()
 
     const buffer = await getParquetBuffer(PARQUET_FILE_URL)
     console.log(buffer)
     await readParquetFile(db, buffer)
+
+    const opfsStatusElement = document.getElementById('opfsStatus')
+    if (opfsStatusElement) {
+      opfsStatusElement.textContent = 'OPFS: true'
+    }
 
     const countedElement = document.getElementById('counted')
     if (countedElement) {
