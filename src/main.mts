@@ -12,14 +12,14 @@ let editor: EditorView
 
 document.addEventListener('DOMContentLoaded', async () => {
   const PARQUET_FILE_URL = import.meta.env.VITE_PARQUET_FILE_URL
-  const scanParquetButton = document.getElementById('scan-parquet') as HTMLButtonElement | null
-  const samplesButton = document.getElementById('samples') as HTMLButtonElement | null
-  const samplesDownloadParquetButton = document.getElementById(
-    'samples-download-parquet',
-  ) as HTMLButtonElement | null
-  const aggregationButton = document.getElementById('aggregation') as HTMLButtonElement | null
-  const clearButton = document.getElementById('clear') as HTMLButtonElement | null
-  const searchInput = document.getElementById('search') as HTMLInputElement | null
+  const fetchParquetElement = document.querySelector<HTMLButtonElement>('#fetch-parquet')
+  const samplesButton = document.querySelector<HTMLButtonElement>('#samples')
+  const samplesDownloadParquetButton = document.querySelector<HTMLButtonElement>(
+    '#samples-download-parquet',
+  )
+  const aggregationButton = document.querySelector<HTMLButtonElement>('#aggregation')
+  const purgeButton = document.querySelector<HTMLButtonElement>('#purge')
+  const searchInput = document.querySelector<HTMLInputElement>('#search')
 
   const DEFAULT_SQL = `SELECT
     time_bucket,
@@ -184,11 +184,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // すべてのボタンを初期状態で無効化
   for (const button of [
-    scanParquetButton,
     samplesButton,
     samplesDownloadParquetButton,
     aggregationButton,
-    clearButton,
+    purgeButton,
     searchInput,
   ]) {
     if (button) button.disabled = true
@@ -205,9 +204,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const db = new duckdb.AsyncDuckDB(logger, worker)
 
   await db.instantiate(duckdb_wasm)
-
   await db.open({
-    path: 'opfs://test.db',
+    path: 'opfs://duckdb-wasm-parquet.db',
     accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
   })
 
@@ -232,71 +230,93 @@ document.addEventListener('DOMContentLoaded', async () => {
   `)
   await conn.close()
 
-  // ここで OPFS にあるかどうかをチェックしてあったらすぐに反映するようする
-  const buffer = await getBufferFromOPFS()
-  if (buffer) {
-    await loadParquetFile(db, buffer)
-    await updateStatus(db)
+  const buffer = await getParquetBuffer(PARQUET_FILE_URL)
+  await readParquetFile(db, buffer)
 
-    // ここは OPFS から読み込んだので、OPFS が使われていることを示す
+  const opfsStatusElement = document.getElementById('opfsStatus')
+  if (opfsStatusElement) {
+    opfsStatusElement.textContent = 'OPFS: true'
+  }
+
+  const countedElement = document.getElementById('counted')
+  if (countedElement) {
+    const conn = await db.connect()
+    const result = await conn.query(`
+      SELECT COUNT(*) FROM rtc_stats;
+    `)
+    const count = JSON.parse(result.toArray()[0])['count_star()']
+    countedElement.textContent = `Counted: ${count}`
+    await conn.close()
+  }
+
+  if (samplesButton) {
+    samplesButton.disabled = false
+  }
+  if (aggregationButton) {
+    aggregationButton.disabled = false
+  }
+  if (samplesDownloadParquetButton) {
+    samplesDownloadParquetButton.disabled = false
+  }
+  if (purgeButton) {
+    purgeButton.disabled = false
+  }
+  if (searchInput) {
+    searchInput.disabled = false
+  }
+
+  document.getElementById('fetch-parquet')?.addEventListener('click', async () => {
+    const worker = new duckdb_worker()
+    const logger = new duckdb.ConsoleLogger()
+    const db = new duckdb.AsyncDuckDB(logger, worker)
+
+    await db.instantiate(duckdb_wasm)
+
+    await db.open({
+      path: 'opfs://duckdb-wasm-parquet.db',
+      accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
+    })
+
     const opfsStatusElement = document.getElementById('opfsStatus')
     if (opfsStatusElement) {
       opfsStatusElement.textContent = 'OPFS: true'
     }
 
-    // scan-parquet ボタンを無効化し、他のボタンを有効化
-    if (scanParquetButton) {
-      scanParquetButton.disabled = true
-    }
-    if (samplesButton) {
-      samplesButton.disabled = false
-    }
-    if (aggregationButton) {
-      aggregationButton.disabled = false
-    }
-    if (samplesDownloadParquetButton) {
-      samplesDownloadParquetButton.disabled = false
-    }
-    if (clearButton) {
-      clearButton.disabled = false
-    }
-    if (searchInput) {
-      searchInput.disabled = false
-    }
-  }
-
-  // DuckDB の初期化が完了して、OPFS にファイルが無い場合はボタンを有効化
-  if (scanParquetButton && !buffer) {
-    scanParquetButton.disabled = false
-  }
-
-  document.getElementById('scan-parquet')?.addEventListener('click', async () => {
     const buffer = await getParquetBuffer(PARQUET_FILE_URL)
+    console.log(buffer)
+    await readParquetFile(db, buffer)
 
-    await loadParquetFile(db, buffer)
-    await updateStatus(db)
-
-    // scan-parquetボタンを無効化し、他のボタンを有効化
-    if (scanParquetButton) {
-      scanParquetButton.disabled = true
+    const countedElement = document.getElementById('counted')
+    if (countedElement) {
+      const conn = await db.connect()
+      const result = await conn.query(`
+        SELECT COUNT(*) FROM rtc_stats;
+      `)
+      const count = JSON.parse(result.toArray()[0])['count_star()']
+      countedElement.textContent = `Counted: ${count}`
+      await conn.close()
     }
+
+    const fetchParquetElement = document.querySelector<HTMLButtonElement>('#fetch-parquet')
+    if (fetchParquetElement) {
+      fetchParquetElement.disabled = true
+    }
+
     if (samplesButton) {
       samplesButton.disabled = false
-    }
-    if (aggregationButton) {
-      aggregationButton.disabled = false
     }
     if (samplesDownloadParquetButton) {
       samplesDownloadParquetButton.disabled = false
     }
-    if (clearButton) {
-      clearButton.disabled = false
+    if (aggregationButton) {
+      aggregationButton.disabled = false
+    }
+    if (purgeButton) {
+      purgeButton.disabled = false
     }
     if (searchInput) {
       searchInput.disabled = false
     }
-
-    await conn.close()
   })
 
   document.getElementById('samples')?.addEventListener('click', async () => {
@@ -397,38 +417,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   })
 
-  document.getElementById('clear')?.addEventListener('click', async () => {
+  document.getElementById('purge')?.addEventListener('click', async () => {
     const resultElement = document.getElementById('result')
     if (resultElement) {
       resultElement.innerHTML = ''
     }
 
-    // DuckDB からテーブルを削除
-    const conn = await db.connect()
-    await conn.query('DROP TABLE IF EXISTS rtc_stats;')
-    await conn.close()
-
-    // DuckDB からファイルを削除
-    await db.dropFile('rtc_stats.parquet')
-
-    // OPFS かファイルを削除
-    if ('createWritable' in FileSystemFileHandle.prototype) {
-      try {
-        await deleteBufferFromOPFS()
-        console.log('Parquet file deleted from OPFS')
-      } catch (error) {
-        console.error('Error deleting Parquet file from OPFS:', error)
-      }
-    }
+    await db.terminate()
+    const opfsRoot = await navigator.storage.getDirectory()
+    await opfsRoot.removeEntry('duckdb-wasm-parquet.db').catch(() => {})
+    await opfsRoot.removeEntry('duckdb-wasm-parquet.db.wal').catch(() => {})
 
     const opfsStatusElement = document.getElementById('opfsStatus')
     if (opfsStatusElement) {
       opfsStatusElement.textContent = 'OPFS: false'
-    }
-
-    const scannedElement = document.getElementById('scanned')
-    if (scannedElement) {
-      scannedElement.textContent = 'Scanned: false'
     }
 
     const countedElement = document.getElementById('counted')
@@ -436,18 +438,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       countedElement.textContent = 'Counted: 0'
     }
 
-    // ボタンの状態を更新
-    if (scanParquetButton) {
-      scanParquetButton.disabled = false
+    if (fetchParquetElement) {
+      fetchParquetElement.disabled = false
     }
+
+    // ボタンの状態を更新
     if (samplesButton) {
       samplesButton.disabled = true
     }
     if (aggregationButton) {
       aggregationButton.disabled = true
     }
-    if (clearButton) {
-      clearButton.disabled = true
+    if (samplesDownloadParquetButton) {
+      samplesDownloadParquetButton.disabled = true
+    }
+    if (purgeButton) {
+      purgeButton.disabled = true
     }
     if (searchInput) {
       searchInput.disabled = true
@@ -499,130 +505,47 @@ const performSearch = async (db: duckdb.AsyncDuckDB, searchTerm: string): Promis
   await conn.close()
 }
 
-// OPFS関連の関数
-
 const FILE_NAME = 'rtc_stats.parquet'
 
-const loadParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Promise<void> => {
+const readParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Promise<void> => {
   await db.registerFileBuffer(`${FILE_NAME}`, new Uint8Array(buffer))
   const conn = await db.connect()
   try {
-    // テーブルが存在するかチェック
+    // テーブルの存在確認をより安全な方法で実装
     const tableExists = await conn.query(`
-      SELECT count(*) as count 
-      FROM information_schema.tables 
-      WHERE table_name = 'rtc_stats'
+      SELECT EXISTS (
+        SELECT 1 
+        FROM information_schema.tables 
+        WHERE table_name = 'rtc_stats'
+      ) as exists_flag;
     `)
 
-    if (tableExists.toArray()[0].count === 0) {
-      // テーブルが存在しない場合のみ作成
+    const exists = tableExists.toArray()[0].exists_flag
+
+    if (!exists) {
+      console.log('テーブルが存在しないため作成します')
       await conn.query(`
-        INSTALL parquet;
-        LOAD parquet;
-        CREATE TABLE rtc_stats AS SELECT *
-        FROM read_parquet('${FILE_NAME}');
+        CREATE TABLE rtc_stats AS SELECT * FROM read_parquet('${FILE_NAME}');
       `)
+    } else {
+      console.log('テーブルは既に存在します')
     }
+    const readParquetElement = document.querySelector<HTMLButtonElement>('#fetch-parquet')
+    if (readParquetElement) {
+      readParquetElement.disabled = true
+    }
+  } catch (error) {
+    console.error('テーブル作成中にエラーが発生しました:', error)
+    throw error
   } finally {
+    console.log('close')
     await conn.close()
   }
 }
 
-const updateStatus = async (db: duckdb.AsyncDuckDB): Promise<void> => {
-  const conn = await db.connect()
-  const result = await conn.query(`
-    SELECT count(*) AS count FROM rtc_stats;
-  `)
-  const scannedResultElement = document.getElementById('scanned')
-  if (scannedResultElement) {
-    scannedResultElement.textContent = 'Scanned: true'
-  }
-  const countedResultElement = document.getElementById('counted')
-  if (countedResultElement) {
-    countedResultElement.textContent = `Counted: ${result.toArray()[0].count}`
-  }
-  await conn.close()
-}
-
-const getBufferFromOPFS = async (): Promise<ArrayBuffer | null> => {
-  if ('createWritable' in FileSystemFileHandle.prototype) {
-    try {
-      const root = await navigator.storage.getDirectory()
-      const fileHandle = await root.getFileHandle(FILE_NAME, { create: false })
-      if (fileHandle) {
-        const file = await fileHandle.getFile()
-        return await file.arrayBuffer()
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'NotFoundError') {
-        return null
-      }
-      console.error('Error reading file from OPFS:', error)
-    }
-  } else {
-    console.warn('createWritable is not supported. Data will not be saved to OPFS.')
-  }
-  return null
-}
-
-const saveStreamToOPFS = async (stream: ReadableStream): Promise<void> => {
-  if ('createWritable' in FileSystemFileHandle.prototype) {
-    try {
-      const root = await navigator.storage.getDirectory()
-      const fileHandle = await root.getFileHandle(FILE_NAME, { create: true })
-      const writable = await fileHandle.createWritable()
-      await stream.pipeTo(writable)
-
-      const opfsStatusElement = document.getElementById('opfsStatus')
-      if (opfsStatusElement) {
-        opfsStatusElement.textContent = 'OPFS: true'
-      }
-    } catch (error) {
-      console.error('Error occurred while saving file to OPFS:', error)
-      throw error
-    }
-  } else {
-    console.warn('createWritable is not supported. Data will not be saved to OPFS.')
-  }
-}
-
-const deleteBufferFromOPFS = async (): Promise<void> => {
-  try {
-    const root = await navigator.storage.getDirectory()
-    await root.removeEntry(FILE_NAME)
-  } catch (error) {
-    console.error('Error deleting file from OPFS:', error)
-    throw error
-  }
-}
-
 const getParquetBuffer = async (PARQUET_FILE_URL: string): Promise<ArrayBuffer> => {
-  if (!('createWritable' in FileSystemFileHandle.prototype)) {
-    const response = await fetch(PARQUET_FILE_URL)
-    const buffer = await response.arrayBuffer()
-    return buffer
-  }
-
-  let buffer = await getBufferFromOPFS()
-  if (buffer) {
-    // ここは OPFS から読み込んだので、OPFS が使われていることを示す
-    const opfsStatusElement = document.getElementById('opfsStatus')
-    if (opfsStatusElement) {
-      opfsStatusElement.textContent = 'OPFS: true'
-    }
-    return buffer
-  }
-
   const response = await fetch(PARQUET_FILE_URL)
-  if (!response.body) {
-    throw new Error('Failed to fetch parquet file.')
-  }
-  await saveStreamToOPFS(response.body)
-  buffer = await getBufferFromOPFS()
-  if (!buffer) {
-    throw new Error('Failed to retrieve buffer from OPFS.')
-  }
-  return buffer
+  return response.arrayBuffer()
 }
 
 // トグルボタンを追加
