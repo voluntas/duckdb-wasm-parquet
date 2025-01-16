@@ -21,6 +21,26 @@ document.addEventListener('DOMContentLoaded', async () => {
   const purgeButton = document.querySelector<HTMLButtonElement>('#purge')
   const searchInput = document.querySelector<HTMLInputElement>('#search')
 
+  // ボタンを無効化
+  if (fetchParquetElement) {
+    fetchParquetElement.disabled = true
+  }
+  if (samplesButton) {
+    samplesButton.disabled = true
+  }
+  if (aggregationButton) {
+    aggregationButton.disabled = true
+  }
+  if (samplesDownloadParquetButton) {
+    samplesDownloadParquetButton.disabled = true
+  }
+  if (purgeButton) {
+    purgeButton.disabled = true
+  }
+  if (searchInput) {
+    searchInput.disabled = true
+  }
+
   const DEFAULT_SQL = `SELECT
     time_bucket,
     channel_id,
