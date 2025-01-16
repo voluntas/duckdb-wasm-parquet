@@ -206,6 +206,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await db.instantiate(duckdb_wasm)
 
+  await db.open({
+    path: 'opfs://test.db',
+    accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
+  })
+
   const duckdbVersionElement = document.getElementById('duckdb-version')
   if (duckdbVersionElement) {
     const version = await db.getVersion()
@@ -501,13 +506,26 @@ const FILE_NAME = 'rtc_stats.parquet'
 const loadParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Promise<void> => {
   await db.registerFileBuffer(`${FILE_NAME}`, new Uint8Array(buffer))
   const conn = await db.connect()
-  await conn.query(`
-    INSTALL parquet;
-    LOAD parquet;
-    CREATE TABLE rtc_stats AS SELECT *
-    FROM read_parquet('${FILE_NAME}');
-  `)
-  await conn.close()
+  try {
+    // テーブルが存在するかチェック
+    const tableExists = await conn.query(`
+      SELECT count(*) as count 
+      FROM information_schema.tables 
+      WHERE table_name = 'rtc_stats'
+    `)
+
+    if (tableExists.toArray()[0].count === 0) {
+      // テーブルが存在しない場合のみ作成
+      await conn.query(`
+        INSTALL parquet;
+        LOAD parquet;
+        CREATE TABLE rtc_stats AS SELECT *
+        FROM read_parquet('${FILE_NAME}');
+      `)
+    }
+  } finally {
+    await conn.close()
+  }
 }
 
 const updateStatus = async (db: duckdb.AsyncDuckDB): Promise<void> => {
