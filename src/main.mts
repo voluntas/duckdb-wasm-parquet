@@ -219,9 +219,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
   }
 
-  const worker = new duckdb_worker()
-  const logger = new duckdb.ConsoleLogger()
-  const db = new duckdb.AsyncDuckDB(logger, worker)
+  let worker = new duckdb_worker()
+  let logger = new duckdb.ConsoleLogger()
+  let db = new duckdb.AsyncDuckDB(logger, worker)
 
   await db.instantiate(duckdb_wasm)
   await db.open({
@@ -286,12 +286,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('fetch-parquet')?.addEventListener('click', async () => {
-    const worker = new duckdb_worker()
-    const logger = new duckdb.ConsoleLogger()
-    const db = new duckdb.AsyncDuckDB(logger, worker)
-
+    worker = new duckdb_worker()
+    logger = new duckdb.ConsoleLogger()
+    db = new duckdb.AsyncDuckDB(logger, worker)
     await db.instantiate(duckdb_wasm)
-
     await db.open({
       path: 'opfs://duckdb-wasm-parquet.db',
       accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
@@ -307,7 +305,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     await conn.close()
 
     const buffer = await getParquetBuffer(PARQUET_FILE_URL)
-    console.log(buffer)
     await readParquetFile(db, buffer)
 
     const opfsStatusElement = document.getElementById('opfsStatus')
