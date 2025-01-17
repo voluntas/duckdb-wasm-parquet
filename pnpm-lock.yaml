@@ -27,8 +27,8 @@ importers:
         specifier: 6.36.2
         version: 6.36.2
       '@duckdb/duckdb-wasm':
-        specifier: 1.29.1-dev21.0
-        version: 1.29.1-dev21.0
+        specifier: 1.29.1-dev42.0
+        version: 1.29.1-dev42.0
       '@replit/codemirror-vim':
         specifier: 6.2.1
         version: 6.2.1(@codemirror/commands@6.8.0)(@codemirror/language@6.10.8)(@codemirror/search@6.5.8)(@codemirror/state@6.5.1)(@codemirror/view@6.36.2)
@@ -146,8 +146,8 @@ packages:
   '@codemirror/view@6.36.2':
     resolution: {integrity: sha512-DZ6ONbs8qdJK0fdN7AB82CgI6tYXf4HWk1wSVa0+9bhVznCuuvhQtX8bFBoy3dv8rZSQqUd8GvhVAcielcidrA==}
 
-  '@duckdb/duckdb-wasm@1.29.1-dev21.0':
-    resolution: {integrity: sha512-FiWO+jE+lxK8K79k2zk06EyKbohy9LJqKsYEc/qMz0bjgsRsbdxPVReo1Tgidb8XNup84UYqa5FMG/0rNPKRrw==}
+  '@duckdb/duckdb-wasm@1.29.1-dev42.0':
+    resolution: {integrity: sha512-d6fAgpFa+z9qEvGEM2ctPYqp0wBLlZvOSQ/ZpVvZXY4FImZJEKrPsjITM+IS4m6iF5UR56gW34cvDjyNJgYpXg==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -1268,7 +1268,7 @@ snapshots:
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
 
-  '@duckdb/duckdb-wasm@1.29.1-dev21.0':
+  '@duckdb/duckdb-wasm@1.29.1-dev42.0':
     dependencies:
       apache-arrow: 17.0.0
 
