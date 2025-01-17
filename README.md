@@ -28,10 +28,11 @@ mv .env.template .env
 pnpm run dev
 ```
 
-- ブラウザで `http://localhost:5173/` にアクセスして、`Scan Parquet` ボタンをクリックしてください
+- ブラウザで `http://localhost:5173/` にアクセスすると自動で OPFS に DuckDB データベースファイルを作成し、Parquet ファイルを取り込みます
+- `Read Parquet` ボタンをクリックして、`Purge` ボタンを押した後に再度 DuckDB データベースファイルを作成します
 - `Samples (1%)` ボタンをクリックして、サンプリングした 1% のデータを表示してみてください
 - `Aggregation` ボタンをクリックして、集計した結果を表示してみてください
-- `Clear` ボタンで OPFS のファイルを削除します
+- `Purge` ボタンで OPFS の DuckDB データベースファイルを削除します
 
 ## 動作例
 
@@ -70,16 +71,17 @@ Vim キーバインディングを追加してます。
 
 [Origin private file system \- Web APIs \| MDN](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system)
 
-安全にブラウザでファイルを取り扱う仕組みです。 [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) と [Stream API](https://developer.mozilla.org/en-US/docs/Web/API/Streams_API) を利用して S3 互換のオブジェクトストレージから Parquet ファイルを取得し、ストリームで OPFS に保存しています。
-保存したファイルを DuckDB へ登録し、アクセスできるようにします。
+安全にブラウザでファイルを取り扱う仕組みです。 DuckDB-Wasm の OPFS に DuckDB データベースファイルを保存する仕組みを利用しています。
 
-この仕組みを使う事で解析用のファイルを再度ダウンロードする必要がなくなります。
+```typescript
+await db.open({
+  path: 'opfs://test.db',
+  accessMode: duckdb.DuckDBAccessMode.READ_WRITE,
+})
+```
 
-### Safari
-
-Safari の OPFS は [FileSystemFileHandle: createWritable\(\) method](https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileHandle/createWritable) が実装されていないため、Safari では OPFS は利用せず毎回 fetch するようにしています。
-
-[231706 – Implement File System standard](https://bugs.webkit.org/show_bug.cgi?id=231706)
+この仕組みを使う事でブラウザに DuckDB データベースファイルを永続化することができるようになり、
+ブラウザを閉じてもデータが残り続けます。
 
 ### DuckDB でアクセスしてみる
 
