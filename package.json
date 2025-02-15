@@ -1,6 +1,6 @@
 {
-  "name": "nodejs-template",
-  "version": "2024.1.0",
+  "name": "duckdb-wasm-parquet",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
   "scripts": {

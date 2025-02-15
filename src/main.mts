@@ -534,7 +534,6 @@ const performSearch = async (db: duckdb.AsyncDuckDB, searchTerm: string): Promis
 const FILE_NAME = 'rtc_stats.parquet'
 
 const readParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Promise<void> => {
-  await db.registerFileBuffer(`${FILE_NAME}`, new Uint8Array(buffer))
   const conn = await db.connect()
   try {
     // テーブルの存在確認をより安全な方法で実装
@@ -550,6 +549,7 @@ const readParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Pro
 
     if (!exists) {
       console.log('テーブルが存在しないため作成します')
+      await db.registerFileBuffer(`${FILE_NAME}`, new Uint8Array(buffer))
       await conn.query(`
         CREATE TABLE rtc_stats AS SELECT * FROM read_parquet('${FILE_NAME}');
       `)
@@ -565,6 +565,7 @@ const readParquetFile = async (db: duckdb.AsyncDuckDB, buffer: ArrayBuffer): Pro
     throw error
   } finally {
     console.log('close')
+    await db.dropFile(`${FILE_NAME}`)
     await conn.close()
   }
 }
