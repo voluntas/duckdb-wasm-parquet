@@ -1,14 +1,11 @@
-# DuckDB-Wasm + Parquet + S3-compatible object storage + OPFS
+# DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage
 
 ![Static Badge](https://img.shields.io/badge/Checked_with-Biome-60a5fa?style=flat&logo=biome)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## 概要
 
-[DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) をブラウザで使用して、
-[OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に DuckDB データベースファイルを作成し、
-S3 互換オブジェクトストレージにある [Parquet](https://parquet.apache.org/) ファイルを読み込んで DuckdB-Wasm に登録し、
-DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
+[DuckDB-Wasm](https://duckdb.org/docs/api/wasm/overview.html) をブラウザで使用して、 [OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) に DuckDB データベースファイルを作成し、 S3 互換オブジェクトストレージにある [Parquet](https://parquet.apache.org/) ファイルを読み込んで DuckdB-Wasm に登録し、 DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
 
 ## 注意
 
@@ -19,7 +16,7 @@ DuckDB-Wasm で SQL でクエリを実行するお試し用のアプリです。
 
 [GitHub Pages](https://pages.github.com/) にアプリをデプロイしてあります。
 
-[DuckDB\-Wasm \+ Parquet \+ S3\-compatible object storage \+ OPFS](https://voluntas.github.io/duckdb-wasm-parquet/)
+[DuckDB\-Wasm \(OPFS\) \+ Parquet \+ S3\-compatible object storage](https://voluntas.github.io/duckdb-wasm-parquet/)
 
 ## ローカルで動作させる方法
 
