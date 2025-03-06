@@ -20,7 +20,7 @@
     "vite": "6.2.0",
     "vitest": "3.0.7"
   },
-  "packageManager": "pnpm@9.14.2",
+  "packageManager": "pnpm@10.5.2",
   "engines": {
     "node": ">=22.12.0"
   },
@@ -31,7 +31,7 @@
     "@codemirror/search": "6.5.10",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.36.4",
-    "@duckdb/duckdb-wasm": "1.29.1-dev68.0",
+    "@duckdb/duckdb-wasm": "1.29.1-dev115.0",
     "@replit/codemirror-vim": "6.2.1",
     "apache-arrow": "19.0.1",
     "codemirror": "6.0.1"
