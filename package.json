@@ -14,11 +14,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@playwright/test": "1.51.1",
-    "playwright": "1.51.1",
+    "@playwright/test": "1.52.0",
+    "playwright": "1.52.0",
     "typescript": "5.8.3",
-    "vite": "6.2.6",
-    "vitest": "3.1.1"
+    "vite": "6.3.4",
+    "vitest": "3.1.2"
   },
   "packageManager": "pnpm@10.5.2",
   "engines": {
@@ -30,8 +30,8 @@
     "@codemirror/language": "6.11.0",
     "@codemirror/search": "6.5.10",
     "@codemirror/state": "6.5.2",
-    "@codemirror/view": "6.36.5",
-    "@duckdb/duckdb-wasm": "1.29.1-dev132.0",
+    "@codemirror/view": "6.36.7",
+    "@duckdb/duckdb-wasm": "1.29.1-dev140.0",
     "@replit/codemirror-vim": "6.3.0",
     "apache-arrow": "19.0.1",
     "codemirror": "6.0.1"
