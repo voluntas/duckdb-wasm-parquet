@@ -18,7 +18,7 @@
     "playwright": "1.52.0",
     "typescript": "5.8.3",
     "vite": "6.3.5",
-    "vitest": "3.1.3"
+    "vitest": "3.1.4"
   },
   "packageManager": "pnpm@10.11.0",
   "engines": {
@@ -31,7 +31,7 @@
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.36.8",
-    "@duckdb/duckdb-wasm": "1.29.1-dev161.0",
+    "@duckdb/duckdb-wasm": "1.29.1-dev202.0",
     "@replit/codemirror-vim": "6.3.0",
     "apache-arrow": "20.0.0",
     "codemirror": "6.0.1"
