@@ -52,7 +52,7 @@ importers:
         specifier: 5.8.3
         version: 5.8.3
       vite:
-        specifier: npm:rolldown-vite@^6.3.21
+        specifier: npm:rolldown-vite@6.3.21
         version: rolldown-vite@6.3.21(@types/node@22.7.4)(esbuild@0.25.5)
       vitest:
         specifier: 3.2.3
