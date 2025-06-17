@@ -17,12 +17,12 @@
     "@playwright/test": "1.53.0",
     "playwright": "1.53.0",
     "typescript": "5.8.3",
-    "vite": "6.3.5",
+    "vite": "npm:rolldown-vite@latest",
     "vitest": "3.2.3"
   },
-  "packageManager": "pnpm@10.11.0",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "dependencies": {
     "@codemirror/commands": "6.8.1",
