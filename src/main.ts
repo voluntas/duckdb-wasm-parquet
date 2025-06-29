@@ -1,6 +1,6 @@
 import { sql } from '@codemirror/lang-sql'
 import { EditorState } from '@codemirror/state'
-import { panels, showPanel } from '@codemirror/view'
+import { showPanel } from '@codemirror/view'
 import * as duckdb from '@duckdb/duckdb-wasm'
 import duckdb_worker from '@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js?worker'
 import duckdb_wasm from '@duckdb/duckdb-wasm/dist/duckdb-eh.wasm?url'
