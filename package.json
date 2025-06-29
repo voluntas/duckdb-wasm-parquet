@@ -31,7 +31,7 @@
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
     "@codemirror/view": "6.38.0",
-    "@duckdb/duckdb-wasm": "1.29.1-dev250.0",
+    "@duckdb/duckdb-wasm": "1.29.1-dev260.0",
     "@replit/codemirror-vim": "6.3.0",
     "apache-arrow": "20.0.0",
     "codemirror": "6.0.2"
