@@ -12,14 +12,6 @@
     "fmt": "pnpm biome format --write src/ tests/",
     "check": "tsc --noEmit"
   },
-  "devDependencies": {
-    "@biomejs/biome": "2.1.0",
-    "@playwright/test": "1.53.2",
-    "playwright": "1.53.2",
-    "typescript": "5.8.3",
-    "vite": "npm:rolldown-vite@7.0.6",
-    "vitest": "3.2.4"
-  },
   "engines": {
     "node": ">=24",
     "pnpm": ">=10"
@@ -30,10 +22,23 @@
     "@codemirror/language": "6.11.2",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
-    "@codemirror/view": "6.38.0",
+    "@codemirror/view": "6.38.1",
     "@duckdb/duckdb-wasm": "1.29.1-dev263.0",
     "@replit/codemirror-vim": "6.3.0",
     "apache-arrow": "21.0.0",
     "codemirror": "6.0.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.2",
+    "@playwright/test": "1.54.1",
+    "playwright": "1.54.1",
+    "typescript": "5.8.3",
+    "vite": "npm:rolldown-vite@7.0.9",
+    "vitest": "3.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@7.0.9"
+    }
   }
 }
