@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "preview": "vite preview",
@@ -39,6 +40,7 @@
     "@biomejs/biome": "2.2.0",
     "@playwright/test": "1.54.2",
     "@tailwindcss/vite": "4.1.12",
+    "@types/emscripten": "^1.40.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-react": "5.0.0",

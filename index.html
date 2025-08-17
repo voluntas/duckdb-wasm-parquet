@@ -54,26 +54,8 @@
 </head>
 
 <body>
-  <div class="container">
-    <h1>DuckDB-Wasm (OPFS) + Parquet + S3-compatible object storage</h1>
-    <h2>GitHub: <a
-        href="https://github.com/voluntas/duckdb-wasm-parquet">https://github.com/voluntas/duckdb-wasm-parquet</a></h2>
-    <h3 id="duckdb-version"></h3>
-    <h3 id="duckdb-wasm-version"></h3>
-    <h3 id="opfsStatus">OPFS: false</h3>
-    <h3 id="counted">Counted: 0</h3>
-    <div id="editor"></div>
-    <button id="fetch-parquet">Fetch Parquet</button>
-    <button id="samples">Samples (1%)</button>
-    <button id="samples-download-parquet">Samples (1%) Download Parquet</button>
-    <button id="aggregation">Aggregation</button>
-    <button id="purge">Purge</button>
-    <br>
-    <input type="text" id="search" placeholder="インスタント検索...">
-    <div id="result"></div>
-  </div>
-
-  <script type="module" src="./src/main.ts"></script>
+  <div id="root"></div>
+  <script type="module" src="./src/main.tsx"></script>
 </body>
 
 </html>
