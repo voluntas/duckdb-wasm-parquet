@@ -26,12 +26,22 @@
     "@duckdb/duckdb-wasm": "1.29.1-dev269.0",
     "@replit/codemirror-vim": "6.3.0",
     "apache-arrow": "21.0.0",
-    "codemirror": "6.0.2"
+    "codemirror": "6.0.2",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "uplot": "1.6.32",
+    "wouter": "3.7.1",
+    "zustand": "5.0.7"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@playwright/test": "1.54.2",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "@vitejs/plugin-react": "5.0.0",
+    "fast-check": "4.2.0",
     "playwright": "1.54.2",
+    "tailwindcss": "4.1.12",
     "typescript": "5.9.2",
     "vite": "7.1.2",
     "vitest": "3.2.4"
