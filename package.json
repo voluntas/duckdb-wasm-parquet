@@ -5,12 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "preview": "vite preview",
     "test:vitest": "vitest run",
     "test:playwright": "playwright test",
     "build": "vite build",
     "lint": "biome lint src/",
-    "fmt": "pnpm biome format --write src/ tests/",
-    "check": "tsc --noEmit"
+    "fmt": "biome format --write src/",
+    "fmt:check": "biome format src/",
+    "typecheck": "tsc --noEmit"
   },
   "engines": {
     "node": ">=24",
@@ -36,6 +38,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@playwright/test": "1.54.2",
+    "@tailwindcss/vite": "4.1.12",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-react": "5.0.0",

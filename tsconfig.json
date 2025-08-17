@@ -1,20 +1,99 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    /* 言語と環境 */
+    // コンパイル後のJavaScriptのバージョン
+    "target": "ES2020",
+    // 使用可能な標準ライブラリ
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    // モジュールシステムの種類
     "module": "ESNext",
+    // モジュール解決方法（バンドラー向け）
+    "moduleResolution": "bundler",
+    // JSX変換モード（React 17+の新しい変換）
+    "jsx": "react-jsx",
+
+    /* 厳格な型チェックオプション */
+    // 全ての厳格な型チェックオプションを有効化
     "strict": true,
-    "declaration": true,
+    // 暗黙的なany型を禁止
+    "noImplicitAny": true,
+    // null/undefined のチェックを厳格化
     "strictNullChecks": true,
-    "importHelpers": true,
-    "moduleResolution": "Bundler",
-    "experimentalDecorators": true,
+    // 関数の型チェックを厳格化
+    "strictFunctionTypes": true,
+    // bind/call/apply の型チェックを厳格化
+    "strictBindCallApply": true,
+    // クラスプロパティの初期化を必須化
+    "strictPropertyInitialization": true,
+    // 暗黙的なthis型を禁止
+    "noImplicitThis": true,
+    // catch変数をunknown型として扱う
+    "useUnknownInCatchVariables": true,
+    // 常に"use strict"を出力
+    "alwaysStrict": true,
+
+    /* 追加のチェック */
+    // 未使用のローカル変数を禁止
+    "noUnusedLocals": true,
+    // 未使用の関数パラメータを禁止
+    "noUnusedParameters": true,
+    // オプショナルプロパティの型を厳密化
+    "exactOptionalPropertyTypes": true,
+    // 暗黙的なreturnを禁止
+    "noImplicitReturns": true,
+    // switchのフォールスルーを禁止
+    "noFallthroughCasesInSwitch": true,
+    // インデックスアクセスの結果にundefinedを含める
+    "noUncheckedIndexedAccess": true,
+    // overrideキーワードの省略を禁止
+    "noImplicitOverride": true,
+    // インデックスシグネチャからのプロパティアクセスを禁止
+    "noPropertyAccessFromIndexSignature": true,
+    // 未使用のラベルを禁止
+    "allowUnusedLabels": false,
+    // 到達不可能なコードを禁止
+    "allowUnreachableCode": false,
+
+    /* モジュール解決オプション */
+    // CommonJSモジュールとの相互運用性を向上
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
+    // 型定義ファイルも含めて全て型チェック（厳格モード）
+    "skipLibCheck": false,
+    // ファイル名の大文字小文字を厳密に区別
+    "forceConsistentCasingInFileNames": true,
+    // JSONファイルのインポートを許可
     "resolveJsonModule": true,
-    "stripInternal": true,
-    "newLine": "LF",
-    "types": [],
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    // 各ファイルを独立したモジュールとして扱う
+    "isolatedModules": true,
+
+    /* 出力オプション */
+    // 型定義ファイル(.d.ts)を生成
+    "declaration": true,
+    // 型定義ファイルのソースマップを生成
+    "declarationMap": true,
+    // ソースマップを生成
+    "sourceMap": true,
+    // 出力先ディレクトリ
+    "outDir": "dist",
+    // ソースコードのルートディレクトリ
+    "rootDir": "src",
+    // ファイルを出力しない（型チェックのみ）
+    "noEmit": true,
+    // コメントを削除
+    "removeComments": true,
+    // 改行コードをLFに統一
+    "newLine": "lf",
+
+    /* 高度なオプション */
+    // デフォルトインポートの合成を許可
+    "allowSyntheticDefaultImports": true,
+    // const enumを保持
+    "preserveConstEnums": true,
+    // @internalタグが付いた宣言を削除
+    "stripInternal": true
   },
-  "exclude": ["node_modules", "tests"]
+  // 対象ファイル
+  "include": ["src/**/*"],
+  // 除外ファイル
+  "exclude": ["node_modules", "dist", "playwright-ct.config.ts", "src/**/*.ct.tsx"]
 }
