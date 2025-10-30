@@ -17,23 +17,23 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "@codemirror/commands": "6.8.1",
+    "@codemirror/commands": "6.10.0",
     "@codemirror/lang-sql": "6.10.0",
     "@codemirror/language": "6.11.3",
     "@codemirror/search": "6.5.11",
     "@codemirror/state": "6.5.2",
-    "@codemirror/view": "6.38.3",
+    "@codemirror/view": "6.38.6",
     "@duckdb/duckdb-wasm": "1.31.0",
     "@replit/codemirror-vim": "6.3.0",
-    "apache-arrow": "21.0.0",
+    "apache-arrow": "21.1.0",
     "codemirror": "6.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
-    "@playwright/test": "1.55.1",
-    "playwright": "1.55.1",
-    "typescript": "5.9.2",
-    "vite": "7.1.7",
-    "vitest": "3.2.4"
+    "@biomejs/biome": "2.3.2",
+    "@playwright/test": "1.56.1",
+    "playwright": "1.56.1",
+    "typescript": "5.9.3",
+    "vite": "7.1.12",
+    "vitest": "4.0.5"
   }
 }
